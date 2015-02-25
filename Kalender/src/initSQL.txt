@@ -5,6 +5,10 @@ CREATE TABLE `Bruker` (
   `BrukerID` INT UNSIGNED NOT NULL,
   `Fornavn` VARCHAR(45) NOT NULL,
   `Etternavn` VARCHAR(45) NOT NULL,
+  
+  `Brukernavn` VARCHAR(45) NOT NULL,
+  `Passord`	VARCHAR(45) NOT NULL,
+  
   PRIMARY KEY (`BrukerID`)
   );
   
@@ -41,3 +45,10 @@ CREATE TABLE `BrukerAvtale` (
 	FOREIGN KEY (`BrukerID`) REFERENCES Bruker(`BrukerID`),
 	FOREIGN KEY (`AvtaleID`) REFERENCES Avtale(`AvtaleID`)
  );
+ 
+ CREATE TABLE `Rom`(
+ 	`RomID` INT UNSIGNED NOT NULL,
+ 	`Size` INT UNSIGNED NOT NULL,
+ 	PRIMARY KEY (`RomID`)
+ );
+ 	
