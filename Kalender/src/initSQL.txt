@@ -1,0 +1,43 @@
+create DATABASE TEST2;
+USE TEST2;
+
+CREATE TABLE `Bruker` (
+  `BrukerID` INT UNSIGNED NOT NULL,
+  `Fornavn` VARCHAR(45) NOT NULL,
+  `Etternavn` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`BrukerID`)
+  );
+  
+CREATE TABLE `Gruppe` (
+  `GruppeID` INT UNSIGNED NOT NULL,
+  `Navn` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`GruppeID`)
+  );
+
+CREATE TABLE `BrukerIgruppe` (
+	`GruppeID` INT UNSIGNED NOT NULL,
+	`BrukerID` INT UNSIGNED NOT NULL,
+    
+	PRIMARY KEY (`GruppeID`,`BrukerID`),
+	FOREIGN KEY (`BrukerID`) REFERENCES Bruker(`BrukerID`),
+	FOREIGN KEY (`GruppeID`) REFERENCES Gruppe(`GruppeID`)
+ );
+
+CREATE TABLE `Avtale` (
+  `AvtaleID` INT UNSIGNED NOT NULL,
+  `Tidpunkt` DATE NOT NULL,
+  `Prioritet` INT(1),
+  `BrukerID` INT UNSIGNED NOT NULL,
+  PRIMARY KEY (`AvtaleID`),
+  FOREIGN KEY (`BrukerID`) REFERENCES Bruker(`BrukerID`)
+  );
+  
+  
+CREATE TABLE `BrukerAvtale` (
+	`AvtaleID` INT UNSIGNED NOT NULL,
+	`BrukerID` INT UNSIGNED NOT NULL,
+    
+	PRIMARY KEY (`BrukerID`,`AvtaleID`),
+	FOREIGN KEY (`BrukerID`) REFERENCES Bruker(`BrukerID`),
+	FOREIGN KEY (`AvtaleID`) REFERENCES Avtale(`AvtaleID`)
+ );
