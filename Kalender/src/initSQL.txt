@@ -24,6 +24,7 @@ CREATE TABLE `BrukerIgruppe` (
     
 	PRIMARY KEY (`GruppeID`,`BrukerID`),
 	FOREIGN KEY (`BrukerID`) REFERENCES Bruker(`BrukerID`),
+		ON DELETE CASCADE ON UPDATE CASCADE
 	FOREIGN KEY (`GruppeID`) REFERENCES Gruppe(`GruppeID`)
  );
 
