@@ -30,15 +30,18 @@ CREATE TABLE `BrukerIgruppe` (
 
 CREATE TABLE `Avtale` (
   `AvtaleID` INT UNSIGNED NOT NULL,
+  `RomID` INT UNSIGNED NOT NULL,
   `Tidpunkt` DATE NOT NULL,
+  
   `Prioritet` INT(1),
   `BrukerID` INT UNSIGNED NOT NULL,
   PRIMARY KEY (`AvtaleID`),
-  FOREIGN KEY (`BrukerID`) REFERENCES Bruker(`BrukerID`)
+  FOREIGN KEY (`BrukerID`) REFERENCES Bruker(`BrukerID`),
+  FOREIGN KEY (`RomID`) REFERENCES Rom(`RomID`)
   );
   
   
-CREATE TABLE `BrukerAvtale` (
+CREATE TABLE `BrukerIAvtale` (
 	`AvtaleID` INT UNSIGNED NOT NULL,
 	`BrukerID` INT UNSIGNED NOT NULL,
     

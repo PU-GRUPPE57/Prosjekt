@@ -6,7 +6,7 @@ public class Group implements Listener {
 	
 	private String id;
 	private String name;
-	public void fireMessage(String message) {
+	public void fireMessage() {
 		// TODO Auto-generated method stub
 		
 	}
