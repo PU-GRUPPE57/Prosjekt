@@ -12,7 +12,7 @@ public class User implements Listener {
 
 	private Scanner input;
 
-	private String addUserSql = "INSERT INTO BRUKER VALUES ";
+	
 
 	public User(String firstname,String lastname, String username, String password){
 		isValidUser(firstname,lastname, username, password);
@@ -20,11 +20,20 @@ public class User implements Listener {
 		this.lastname = lastname;
 		this.username=username;
 		this.password=password;
+		this.id = generateID();
 	}
+	
+	public User(String firstname,String lastname){
+		isValidUser(firstname,lastname, username, password);
+		this.firstname=firstname;
+		this.lastname = lastname;
+	}
+
 
 
 	public void save(){
 		Connection conn = Admin.getConnection();
+		String addUserSql = "INSERT INTO BRUKER VALUES ";
 		try {
 			Statement stmt = conn.createStatement();
 			stmt.executeUpdate(addUserSql + "(" + generateID() + ",'"  + firstname + "','" + lastname + "','" + username + "','" + password + "')");
@@ -65,6 +74,13 @@ public class User implements Listener {
 			e.printStackTrace();
 		}
 		throw new IllegalStateException("ID-generation failed");
+	}
+	
+	public String getName(){
+		return firstname + " " + lastname;
+	}
+	public int getId() {
+		return id;
 	}
 
 

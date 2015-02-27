@@ -5,7 +5,7 @@ import java.util.List;
 
 public class Room {
 	
-	private String roomId;
+	private String Id;
 	private int size;
 	private String type;
 	
@@ -17,6 +17,8 @@ public class Room {
 		return new ArrayList<Room>();
 	}
 	
-	
+	public String getId() {
+		return Id;
+	}
 
 }
