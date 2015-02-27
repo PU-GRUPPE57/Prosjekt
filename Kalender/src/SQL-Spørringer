@@ -15,3 +15,4 @@ where B.brukerID=BG.BrukerID AND BG.gruppeid= X;
 select G.GruppeID
 from gruppe as G, BrukerIgruppe as BG
 where G.gruppeID not in (BG.gruppeID);
+
