@@ -1,0 +1,17 @@
+SQL-Sp¿rringer:
+
+// Finner brukerID, navn og avtaleID i alle som er medlem av avtale X
+select B.brukerID, B.fornavn,B.etternavn, BA.AvtaleID
+from bruker as B, BrukerAvtale as BA
+where B.BrukerID=BA.BrukerID AND BA.AvtaleID= X;
+
+// Finner brukerID, navn og gruppeid til alle som er medlem av gruppe X
+select B.brukerID, B.fornavn, B.etternavn, BG.gruppeid
+from bruker as B, BrukerIgruppe as BG
+where B.brukerID=BG.BrukerID AND BG.gruppeid= X;
+
+
+// Finner grupper som ikke har noen medlemmer
+select G.GruppeID
+from gruppe as G, BrukerIgruppe as BG
+where G.gruppeID not in (BG.gruppeID);
