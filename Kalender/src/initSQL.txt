@@ -37,7 +37,7 @@ CREATE TABLE `Rom`(
 CREATE TABLE `Avtale` (
   `AvtaleID` INT UNSIGNED NOT NULL,
   `RomID` INT UNSIGNED NOT NULL,
-  `Tidpunkt` DATE NOT NULL,
+  `Tidpunkt` DATETIME NOT NULL,		//MySQL retrieves and displays DATETIME values in 'YYYY-MM-DD HH:MM:SS' format. The supported range is '1000-01-01 00:00:00' to '9999-12-31 23:59:59'.
   
   `Prioritet` INT(1),
   `BrukerID` INT UNSIGNED NOT NULL,
