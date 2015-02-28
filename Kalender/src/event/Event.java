@@ -48,6 +48,7 @@ public class Event {
 		try {
 			Statement stmt = conn.createStatement();
 			stmt.executeUpdate(addEventSql);
+			stmt.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -61,6 +62,7 @@ public class Event {
 			rs.next();
 			if (rs == null) res = 1;
 			else res=rs.getInt("M") + 1;
+			stmt.close();
 			return res;
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -80,6 +82,7 @@ public class Event {
 			while(rs.next()){
 				l.add(User.getUser(conn, rs.getInt("BrukerID")));
 			}
+			stmt.close();
 
 		} catch (SQLException e) {
 			e.printStackTrace();

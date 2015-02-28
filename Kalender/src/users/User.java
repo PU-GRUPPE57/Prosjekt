@@ -31,22 +31,24 @@ public class User implements Listener {
 	}
 	//legger til ev i user:
 	public void addEvent(Connection conn, Event ev){
-		if (id ==-1) save(conn);
+		if (id ==-1) this.save(conn);
 		String addEventSql = "INSERT INTO BRUKERIAVTALE VALUES " + "(" + id + "," + ev.getId() + ")";
 		try {
 			Statement stmt = conn.createStatement();
 			stmt.executeUpdate(addEventSql);
+			stmt.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
 	
 	public void removeEvent(Connection conn, Event ev){
-		if (id == -1) save(conn);
+		if (id == -1) this.save(conn);
 		String deleteEventSql = "DELETE FROM BRUKERIAVTALE WHERE BRUKERID=" + id + " AND AVTALEID=" + ev.getId();
 		try {
 			Statement stmt = conn.createStatement();
 			stmt.executeUpdate(deleteEventSql);
+			stmt.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -58,6 +60,7 @@ public class User implements Listener {
 		try {
 			Statement stmt = conn.createStatement();
 			stmt.executeUpdate(addUserSql);
+			stmt.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -103,6 +106,7 @@ public class User implements Listener {
 			rs.next();
 			if (rs == null) res = 1;
 			else res=rs.getInt("M") + 1;
+			stmt.close();
 			return res;
 		} catch (SQLException e) {
 			e.printStackTrace();

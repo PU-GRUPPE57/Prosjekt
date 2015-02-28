@@ -36,6 +36,7 @@ public class Room {
 		try {
 			Statement stmt = conn.createStatement();
 			stmt.executeUpdate(addRomSql);
+			stmt.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -47,6 +48,7 @@ public class Room {
 			ResultSet rs = stmt.executeQuery("SELECT * FROM ROM WHERE ROMID = " + id);
 			rs.next();
 			Room r = new Room(rs.getInt("Romid"), rs.getInt("Size"));
+			stmt.close();
 			return r;
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -72,6 +74,7 @@ public class Room {
 			rs.next();
 			if (rs == null) res = 1;
 			else res=rs.getInt("M") + 1;
+			stmt.close();
 			return res;
 		} catch (SQLException e) {
 			e.printStackTrace();

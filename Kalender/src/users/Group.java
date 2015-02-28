@@ -31,6 +31,7 @@ public class Group implements Listener {
 		try {
 			Statement stmt = conn.createStatement();
 			stmt.executeUpdate(addEventSql);
+			stmt.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -42,6 +43,7 @@ public class Group implements Listener {
 		try {
 			Statement stmt = conn.createStatement();
 			stmt.executeUpdate(deleteUserSql);
+			stmt.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -53,6 +55,7 @@ public class Group implements Listener {
 		try {
 			Statement stmt = conn.createStatement();
 			stmt.executeUpdate(addGroupSql);
+			stmt.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
