@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,24 +18,33 @@ public class Event {
 	private Room rom;
 	private User owner;
 	private int priority;
+	private Timestamp time;
 	
 
-
-	public Event(String name, int priority){
+	public Event(String name, int priority, Room rom, User owner){
 		if (!name.matches("[a-ÂA-≈0-9]+")){
 			throw new IllegalArgumentException();
 		}
 		this.name = name;
 		this.priority = priority;
 		this.id = generateID();
+		this.rom=rom;
+		this.owner=owner;
+	}
+	//Brukes kun til Â hente event ved id:
+	private Event(int id,Room rom, String name,Timestamp t , int priority, User owner){
+		this.id =id;
+		this.name = name;
+		this.rom=rom;
+		this.owner = owner;
+		this.priority=priority;
 	}
 
-	public void save(){
+	public void save(Connection conn){
 		String addEventSql = "INSERT INTO AVTALE VALUES ";
-		Connection conn = Admin.getConnection();
 		try {
 			Statement stmt = conn.createStatement();
-			stmt.executeUpdate(addEventSql + "(" + id + ",'"  + name + "','" + rom.getId() + "','" + owner.getId() + "','" + priority + "')");
+			stmt.executeUpdate(addEventSql + "(" + id + ",'"  + rom.getId() + "','" + name + "','" + new Timestamp(1) + "','" + priority + "','" + owner.getId() + "')");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -56,7 +66,7 @@ public class Event {
 		throw new IllegalStateException("ID-generation failed");
 	}
 
-	public List<User> getParticipants(){
+	public List<User> getParticipants(){//UTESTET!
 		List<User> l = new ArrayList();
 		Connection conn = Admin.getConnection();
 		// Finner brukerID, navn og avtaleID i alle som er medlem av avtale
@@ -67,7 +77,7 @@ public class Event {
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(sql);
 			while(rs.next()){
-				l.add(new User(rs.getString("FIRSTNAME"),rs.getString("LASTNAME")));
+				l.add(new User(rs.getString("Fornavn"),rs.getString("Etternavn")));
 			}
 
 		} catch (SQLException e) {
@@ -79,5 +89,24 @@ public class Event {
 
 	public int getId() {
 		return id;
+	}
+	
+public static Event getEvent(Connection conn , int id){
+		try {
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM AVTALE WHERE AVTALEID = " + id);
+			rs.next();
+			Event u = new Event(id, Room.getRoom(conn, rs.getInt("Romid")), rs.getString("Name"), rs.getTimestamp("Tidpunkt"), rs.getInt("Prioritet"), User.getUser(conn, rs.getInt("Brukerid"))); 
+			stmt.close();
+			return u;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		throw new IllegalStateException("failed to get event by id: " + id );
+	}
+
+	@Override
+	public String toString() {
+		return name + "ID: " + id;
 	}
 }

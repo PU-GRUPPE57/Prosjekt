@@ -1,8 +1,8 @@
 package users;
 
 import java.sql.*;
-import java.util.Scanner;
 
+import event.Event;
 import notification.Listener;
 
 public class User implements Listener {
@@ -10,12 +10,9 @@ public class User implements Listener {
 	private String firstname,lastname, username, password;
 	private int id;
 
-	private Scanner input;
-
-	
-
+	//Konstuktører
 	public User(String firstname,String lastname, String username, String password){
-		isValidUser(firstname,lastname, username, password);
+		//isValidUser(firstname,lastname, username, password);
 		this.firstname=firstname;
 		this.lastname = lastname;
 		this.username=username;
@@ -24,29 +21,63 @@ public class User implements Listener {
 	}
 	
 	public User(String firstname,String lastname){
-		isValidUser(firstname,lastname, username, password);
+		//isValidUser(firstname,lastname, username, password);
 		this.firstname=firstname;
 		this.lastname = lastname;
 	}
-
-
-
-	public void save(){
-		Connection conn = Admin.getConnection();
-		String addUserSql = "INSERT INTO BRUKER VALUES ";
+	//BRUKES TIL Å HENTE BRUKER VED ID
+	private User(int id,String firstname,String lastname, String username, String password){
+		//isValidUser(firstname,lastname, username, password);
+		this.firstname=firstname;
+		this.lastname = lastname;
+		this.username=username;
+		this.password=password;
+		this.id = id;
+	}
+	//legger til ev i user:
+	public void addEvent(Connection conn, Event ev){
+		String addEventSql = "INSERT INTO BRUKERIAVTALE VALUES ";
 		try {
 			Statement stmt = conn.createStatement();
-			stmt.executeUpdate(addUserSql + "(" + generateID() + ",'"  + firstname + "','" + lastname + "','" + username + "','" + password + "')");
+			stmt.executeUpdate(addEventSql + "(" + id + "," + ev.getId() + ")");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public void removeEvent(Connection conn, Event ev){
+		//TODO
+	}
+	
+	public void save(Connection conn){
+		String addUserSql = "INSERT INTO BRUKER VALUES ";
+		try {
+			Statement stmt = conn.createStatement();
+			stmt.executeUpdate(addUserSql + " (" + id + ",'"  + firstname + "','" + lastname + "','" + username + "','" + password + "')");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	//Henter bruker med id-en som gis
+	public static User getUser(Connection conn , int id){
+		try {
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM BRUKER WHERE BRUKERID = " + id);
+			rs.next();
+			User u = new User(rs.getInt("BrukerID"), rs.getString("Fornavn"), rs.getString("Etternavn"), rs.getString("Brukernavn"), rs.getString("passord"));
+			stmt.close();
+			return u;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		throw new IllegalStateException("failed to get user by id: " + id);
 	}
 
 	public void fireMessage() {
 		// TODO Auto-generated method stub
 
 	}
-
+	//Test for restriksjoner i brukernavn, og navn //TODO passord
 	private boolean isValidUser(String firstname,String lastname, String username, String password){
 		if (!(firstname.matches("[a-åA-Å]+"))){
 			throw new IllegalArgumentException("Invalid firstname");
@@ -82,10 +113,10 @@ public class User implements Listener {
 	public int getId() {
 		return id;
 	}
-
-
-	public static void main(String[] args) {
-		User user = new User("Eivind", "Midtgarden", "alkkasjfna", "llolol");
-		user.save();
-	}	
+	
+	@Override
+	public String toString() {
+		return "Bruker: " + id + firstname + lastname;
+	}
+	
 }

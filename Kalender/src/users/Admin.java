@@ -34,10 +34,9 @@ public class Admin {
 		}
 		return conn;
 	}
-	public static void closeConnection(Connection conn, Statement stmt){
+	public static void closeConnection(Connection conn){
 		try{
 			conn.close();
-			stmt.close();
 		}catch(SQLException se){
 			//Handle errors for JDBC
 			se.printStackTrace();
@@ -46,16 +45,11 @@ public class Admin {
 			e.printStackTrace();
 		}finally{
 			try{
-				if(stmt!=null)
-					stmt.close();
-			}catch(SQLException se2){
-			}// nothing we can do
-				try{
-					if(conn!=null)
-						conn.close();
-				}catch(SQLException se1){
-					se1.printStackTrace();
-				}//end finally try
+				if(conn!=null)
+					conn.close();
+			}catch(SQLException se1){
+				se1.printStackTrace();
+			}//end finally try
 		}// end try
 	}
 
