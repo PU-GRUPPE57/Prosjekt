@@ -15,16 +15,11 @@ public class User implements Listener {
 		//isValidUser(firstname,lastname, username, password);
 		this.firstname=firstname;
 		this.lastname = lastname;
-		this.username=username;
-		this.password=password;
-		this.id = generateID();
+		this.username = username;
+		this.password = password;
+		this.id = -1;
 	}
 	
-	public User(String firstname,String lastname){
-		//isValidUser(firstname,lastname, username, password);
-		this.firstname=firstname;
-		this.lastname = lastname;
-	}
 	//BRUKES TIL Å HENTE BRUKER VED ID
 	private User(int id,String firstname,String lastname, String username, String password){
 		//isValidUser(firstname,lastname, username, password);
@@ -36,24 +31,33 @@ public class User implements Listener {
 	}
 	//legger til ev i user:
 	public void addEvent(Connection conn, Event ev){
-		String addEventSql = "INSERT INTO BRUKERIAVTALE VALUES ";
+		if (id ==-1) save(conn);
+		String addEventSql = "INSERT INTO BRUKERIAVTALE VALUES " + "(" + id + "," + ev.getId() + ")";
 		try {
 			Statement stmt = conn.createStatement();
-			stmt.executeUpdate(addEventSql + "(" + id + "," + ev.getId() + ")");
+			stmt.executeUpdate(addEventSql);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
 	
 	public void removeEvent(Connection conn, Event ev){
-		//TODO
+		if (id == -1) save(conn);
+		String deleteEventSql = "DELETE FROM BRUKERIAVTALE WHERE BRUKERID=" + id + " AND AVTALEID=" + ev.getId();
+		try {
+			Statement stmt = conn.createStatement();
+			stmt.executeUpdate(deleteEventSql);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public void save(Connection conn){
-		String addUserSql = "INSERT INTO BRUKER VALUES ";
+		id = generateID(conn);
+		String addUserSql = "INSERT INTO BRUKER VALUES " + " (" + id + ",'"  + firstname + "','" + lastname + "','" + username + "','" + password + "')";
 		try {
 			Statement stmt = conn.createStatement();
-			stmt.executeUpdate(addUserSql + " (" + id + ",'"  + firstname + "','" + lastname + "','" + username + "','" + password + "')");
+			stmt.executeUpdate(addUserSql);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -91,8 +95,7 @@ public class User implements Listener {
 		return true;
 	}
 
-	private int generateID(){
-		Connection conn = Admin.getConnection();
+	private int generateID(Connection conn){
 		int res;
 		try {
 			Statement stmt = conn.createStatement();
@@ -111,6 +114,7 @@ public class User implements Listener {
 		return firstname + " " + lastname;
 	}
 	public int getId() {
+		if (id == -1) throw new IllegalStateException("User ID not set, use user.save() first");
 		return id;
 	}
 	

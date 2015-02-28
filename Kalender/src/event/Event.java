@@ -21,18 +21,20 @@ public class Event {
 	private Timestamp time;
 	
 
-	public Event(String name, int priority, Room rom, User owner){
+	public Event(String name, int priority, Room rom, User owner, Timestamp t){
 		if (!name.matches("[a-ÂA-≈0-9]+")){
 			throw new IllegalArgumentException();
 		}
 		this.name = name;
 		this.priority = priority;
-		this.id = generateID();
+		this.id = -1;
 		this.rom=rom;
 		this.owner=owner;
+		this.time = t;
 	}
+	
 	//Brukes kun til Â hente event ved id:
-	private Event(int id,Room rom, String name,Timestamp t , int priority, User owner){
+	private Event(int id,Room rom, String name, Timestamp t , int priority, User owner){
 		this.id =id;
 		this.name = name;
 		this.rom=rom;
@@ -41,17 +43,17 @@ public class Event {
 	}
 
 	public void save(Connection conn){
-		String addEventSql = "INSERT INTO AVTALE VALUES ";
+		id = generateID(conn);
+		String addEventSql = "INSERT INTO AVTALE VALUES " + "(" + id + ",'"  + rom.getId() + "','" + name + "','" + time + "','" + priority + "','" + owner.getId() + "')";
 		try {
 			Statement stmt = conn.createStatement();
-			stmt.executeUpdate(addEventSql + "(" + id + ",'"  + rom.getId() + "','" + name + "','" + new Timestamp(1) + "','" + priority + "','" + owner.getId() + "')");
+			stmt.executeUpdate(addEventSql);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
 
-	private int generateID(){
-		Connection conn = Admin.getConnection();
+	private int generateID(Connection conn){
 		int res;
 		try {
 			Statement stmt = conn.createStatement();
@@ -65,10 +67,9 @@ public class Event {
 		}
 		throw new IllegalStateException("ID-generation failed");
 	}
-
-	public List<User> getParticipants(){//UTESTET!
+	//Ikke testet enda:
+	public List<User> getParticipants(Connection conn){
 		List<User> l = new ArrayList();
-		Connection conn = Admin.getConnection();
 		// Finner brukerID, navn og avtaleID i alle som er medlem av avtale
 		String sql = "select B.fornavn,B.etternavn"
 				+ " from bruker as B, BrukerAvtale as BA "
@@ -77,7 +78,7 @@ public class Event {
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(sql);
 			while(rs.next()){
-				l.add(new User(rs.getString("Fornavn"),rs.getString("Etternavn")));
+				l.add(User.getUser(conn, rs.getInt("BrukerID")));
 			}
 
 		} catch (SQLException e) {
@@ -88,6 +89,7 @@ public class Event {
 	}
 
 	public int getId() {
+		if (id == -1) throw new IllegalStateException("invalid event id, call event.save() first");
 		return id;
 	}
 	

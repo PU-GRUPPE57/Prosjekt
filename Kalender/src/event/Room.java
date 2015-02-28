@@ -19,7 +19,7 @@ public class Room {
 	
 	
 	public Room(int size){
-		this.id= generateID();
+		this.id= -1;
 		this.size=size;
 	}
 	
@@ -30,10 +30,12 @@ public class Room {
 	}
 	
 	public void save(Connection conn){
-		String addRomSql = "INSERT INTO ROM VALUES ";
+		id = generateID(conn);
+		
+		String addRomSql = "INSERT INTO ROM VALUES " + "(" + id + ",'"  + size + "')";
 		try {
 			Statement stmt = conn.createStatement();
-			stmt.executeUpdate(addRomSql + "(" + id + ",'"  + size + "')");
+			stmt.executeUpdate(addRomSql);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -58,11 +60,11 @@ public class Room {
 	}
 	
 	public int getId() {
+		if (id == -1) throw new IllegalStateException("Room ID not set, use room.save() first");
 		return id;
 	}
 	
-	private int generateID(){
-		Connection conn = Admin.getConnection();
+	private int generateID(Connection conn){
 		int res;
 		try {
 			Statement stmt = conn.createStatement();
