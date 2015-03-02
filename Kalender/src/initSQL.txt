@@ -15,7 +15,9 @@ CREATE TABLE `Bruker` (
 CREATE TABLE `Gruppe` (
   `GruppeID` INT UNSIGNED NOT NULL,
   `Navn` VARCHAR(45) NOT NULL,
-  PRIMARY KEY (`GruppeID`)
+  `Admin` INT UNSIGNED NOT NULL,
+  PRIMARY KEY (`GruppeID`),
+  FOREIGN KEY (`Admin`) REFERENCES BRUKER(BRUKERID)
   );
 
 CREATE TABLE `BrukerIgruppe` (
@@ -38,7 +40,9 @@ CREATE TABLE `Avtale` (
   `AvtaleID` INT UNSIGNED NOT NULL,
   `RomID` INT UNSIGNED NOT NULL,
   `Name` VARCHAR(45) NOT NULL,
-  `Tidpunkt` DATETIME NOT NULL,		//MySQL retrieves & displays DATETIME values in 'YYYY-MM-DD HH:MM:SS' format. The supported range is '1000-01-01 00:00:00' to '9999-12-31 23:59:59'.
+  `Start` DATETIME NOT NULL,		//MySQL retrieves & displays DATETIME values in 'YYYY-MM-DD HH:MM:SS' format. The supported range is '1000-01-01 00:00:00' to '9999-12-31 23:59:59'.
+  `Slutt` DATETIME NOT NULL,
+  `Beskrivelse` VARCHAR(45),
   
   `Prioritet` INT(1),
   `BrukerID` INT UNSIGNED NOT NULL,

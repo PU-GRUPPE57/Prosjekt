@@ -42,6 +42,10 @@ public class User implements Listener {
 		}
 	}
 	
+	public void addToGroup(Connection conn, Group g){
+		g.addUser(conn, this);
+	}
+	
 	public void removeEvent(Connection conn, Event ev){
 		if (id == -1) this.save(conn);
 		String deleteEventSql = "DELETE FROM BRUKERIAVTALE WHERE BRUKERID=" + id + " AND AVTALEID=" + ev.getId();

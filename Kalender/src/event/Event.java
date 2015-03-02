@@ -18,10 +18,12 @@ public class Event {
 	private Room rom;
 	private User owner;
 	private int priority;
-	private Timestamp time;
+	private Timestamp start;
+	private Timestamp end;
+	private String description;
 	
 
-	public Event(String name, int priority, Room rom, User owner, Timestamp t){
+	public Event(String name, int priority, Room rom, User owner, Timestamp start, Timestamp slutt, String description){
 		if (!name.matches("[a-ÂA-≈0-9]+")){
 			throw new IllegalArgumentException();
 		}
@@ -30,28 +32,40 @@ public class Event {
 		this.id = -1;
 		this.rom=rom;
 		this.owner=owner;
-		this.time = t;
+		this.start = start;
+		this.end = slutt;
+		this.description= description;
 	}
 	
 	//Brukes kun til Â hente event ved id:
-	private Event(int id,Room rom, String name, Timestamp t , int priority, User owner){
+	private Event(int id,Room rom, String name, Timestamp t, Timestamp t2 , int priority, User owner, String description){
 		this.id =id;
 		this.name = name;
 		this.rom=rom;
 		this.owner = owner;
 		this.priority=priority;
+		this.start = t;
+		this.end = t2;
+		this.description=description;
 	}
 
 	public void save(Connection conn){
 		id = generateID(conn);
-		String addEventSql = "INSERT INTO AVTALE VALUES " + "(" + id + ",'"  + rom.getId() + "','" + name + "','" + time + "','" + priority + "','" + owner.getId() + "')";
+		String addEventSql = "INSERT INTO AVTALE VALUES " + "(" + id + ",'"  + rom.getId() + "','" + name + "','" + start + "','" + end + "','" + description + "','" + priority + "','" + owner.getId() + "')";
 		try {
 			Statement stmt = conn.createStatement();
 			stmt.executeUpdate(addEventSql);
 			stmt.close();
+			addUser(conn,owner);
+			
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	
+	public void addUser(Connection conn, User u){
+		u.addEvent(conn, this);
 	}
 
 	private int generateID(Connection conn){
@@ -101,7 +115,7 @@ public static Event getEvent(Connection conn , int id){
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM AVTALE WHERE AVTALEID = " + id);
 			rs.next();
-			Event u = new Event(id, Room.getRoom(conn, rs.getInt("Romid")), rs.getString("Name"), rs.getTimestamp("Tidpunkt"), rs.getInt("Prioritet"), User.getUser(conn, rs.getInt("Brukerid"))); 
+			Event u = new Event(id, Room.getRoom(conn, rs.getInt("Romid")), rs.getString("Name"), rs.getTimestamp("Start"), rs.getTimestamp("Slutt"), rs.getInt("Prioritet"), User.getUser(conn, rs.getInt("Brukerid")), rs.getString("Beskrivelse")); 
 			stmt.close();
 			return u;
 		} catch (SQLException e) {

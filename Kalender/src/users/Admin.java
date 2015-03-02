@@ -7,13 +7,13 @@ import java.sql.Statement;
 
 public class Admin {
 
-	public static Connection getConnection(){
+	public static Connection getConnection(String user, String pass){
 		final String JDBC_DRIVER = "com.mysql.jdbc.Driver";  
 		final String DB_URL = "jdbc:mysql://localhost:3306/test2";
 
 		//  Database credentials
-		final String USER = "root";
-		final String PASS = "";
+		final String USER = user;
+		final String PASS = pass;
 
 		Connection conn = null;
 		try{

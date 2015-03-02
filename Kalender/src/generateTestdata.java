@@ -12,15 +12,15 @@ import users.User;
 public class generateTestdata {
 
 	public static void main(String[] args) {
-		Connection conn = Admin.getConnection();
+		Connection conn = Admin.getConnection("root", "");
 		
 //		User u = User.getUser(conn, 1);
 //		Event e = Event.getEvent(conn, 1);
-//		Group g = Group.getGroup(conn, 5);
+		Group g1 = Group.getGroup(conn, 1);
 //		u.addEvent(conn, e);
 //		g.addUser(conn, u);
 //		g.removeUser(conn, u);
-		
+//		
 		User a = new User("Sindre", "Flood", "aksjf","asjkfa");
 		User b = new User("Simen", "Hendrick", "aksjf","asjkfa");
 		User c = new User("Eivind", "Asne", "aksjf","asjkfa");
@@ -31,15 +31,23 @@ public class generateTestdata {
 		c.save(conn);
 		d.save(conn);
 		e1.save(conn);
-		Room r1 = new Room(5);
-		r1.save(conn);
-		Event g5 = new Event("Hey", 1, Room.getRoom(conn,1), User.getUser(conn,1), new Timestamp(100));
-		g5.save(conn);
-		Group g1 = new Group("Debeste");
-		Group g2 = new Group("halla!");
-		g1.save(conn);
-		g2.save(conn);
-		g1.addUser(conn, a);
+//		Room r1 = new Room(5);
+//		r1.save(conn);
+//		Event g5 = new Event("Hey", 1, Room.getRoom(conn,1), User.getUser(conn,1), new Timestamp(100), new Timestamp(150), "DETTE ER EN EVENT");
+//		g5.save(conn);
+//		Group g1 = new Group("Debeste", a);
+//		Group g2 = new Group("halla!", a);
+//		g1.save(conn);
+//		g2.save(conn);
+//		g1.addUser(conn, b);
+//		g1.addUser(conn, c);
+//		g1.addUser(conn, d);
+//		g1.addUser(conn, e1);
+//		
+		for (User u : g1.getUsers(conn)){
+			System.out.println(u.getName());
+		}
+		
 		Admin.closeConnection(conn);
 	}
 }
