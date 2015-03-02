@@ -83,6 +83,25 @@ public class Event {
 		}
 		throw new IllegalStateException("ID-generation failed");
 	}
+	
+	public List<User> getUsers(Connection conn){
+		List<User> l = new ArrayList<User>();
+		String sql = "SELECT BRUKER.BRUKERID FROM BRUKER, BRUKERIAVTALE WHERE BRUKER.BRUKERID=BRUKERIAVTALE.BRUKERID AND BRUKERIAVTALE.AVTALEID =" + this.id;
+		try {
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(sql);
+			while(rs.next()){
+				l.add(User.getUser(conn, rs.getInt("BRUKER.BRUKERID")));
+			}
+			stmt.close();
+			return l;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		//TODO
+		throw new IllegalStateException("Noe gikk feil ved henting av brukere");
+	}
+	
 	//Ikke testet enda:
 	public List<User> getParticipants(Connection conn){
 		List<User> l = new ArrayList();
