@@ -72,7 +72,8 @@ public class Group implements Listener {
 	}
 	
 	
-	//UTESTET! fjerner ev fra alle medlemmene i gruppa:
+	//Fjerner ev fra alle medlemmene i gruppa:
+	//TODO test
 	public void removeEvent(Connection conn, Event ev){
 		List<User> users = ev.getUsers(conn);
 		for (User u : users){
