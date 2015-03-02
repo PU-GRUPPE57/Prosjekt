@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import users.Admin;
@@ -63,9 +64,30 @@ public class Event {
 		}
 	}
 	
-	
+	//legger til bruker i eventet:
 	public void addUser(Connection conn, User u){
 		u.addEvent(conn, this);
+	}
+	
+	//returnerer et map over brukere som er med, og hvilken tilstand de har (ikke svart (0) , takket ja (1), takket nei (2))
+	//TODO test
+	public HashMap<User, Integer> checkInviteStatus(Connection conn){
+		HashMap<User, Integer> m = new HashMap<User, Integer>();
+		String sql = "SELECT BRUKER.BRUKERID, BRUKERIAVTALE.STATUS FROM BRUKER, BRUKERIAVTALE WHERE BRUKER.BRUKERID=BRUKERIAVTALE.BRUKERID AND BRUKERIAVTALE.AVTALEID =" + this.id;
+		
+		try {
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(sql);
+			while(rs.next()){
+				m.put(User.getUser(conn, rs.getInt("BRUKER.BRUKERID")), rs.getInt("BRUKERIAVTALE.STATUS"));
+			}
+			stmt.close();
+			return m;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		//TODO
+		throw new IllegalStateException("Noe gikk feil ved henting av brukere");
 	}
 
 	private int generateID(Connection conn){
@@ -84,6 +106,7 @@ public class Event {
 		throw new IllegalStateException("ID-generation failed");
 	}
 	
+	//Returnerer liste over alle inviterte:
 	public List<User> getUsers(Connection conn){
 		List<User> l = new ArrayList<User>();
 		String sql = "SELECT BRUKER.BRUKERID FROM BRUKER, BRUKERIAVTALE WHERE BRUKER.BRUKERID=BRUKERIAVTALE.BRUKERID AND BRUKERIAVTALE.AVTALEID =" + this.id;
@@ -99,36 +122,16 @@ public class Event {
 			e.printStackTrace();
 		}
 		//TODO
-		throw new IllegalStateException("Noe gikk feil ved henting av brukere");
+		throw new IllegalStateException("Noe gikk feil ved henting av inviterte brukere i event");
 	}
 	
-	//Ikke testet enda:
-	public List<User> getParticipants(Connection conn){
-		List<User> l = new ArrayList();
-		// Finner brukerID, navn og avtaleID i alle som er medlem av avtale
-		String sql = "select B.fornavn,B.etternavn"
-				+ " from bruker as B, BrukerAvtale as BA "
-				+ "where B.BrukerID=BA.BrukerID AND BA.AvtaleID= " + id;
-		try {
-			Statement stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery(sql);
-			while(rs.next()){
-				l.add(User.getUser(conn, rs.getInt("BrukerID")));
-			}
-			stmt.close();
-
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-
-		return l;
-	}
-
+	
 	public int getId() {
 		if (id == -1) throw new IllegalStateException("invalid event id, call event.save() first");
 		return id;
 	}
 	
+	//henter event ved id:
 public static Event getEvent(Connection conn , int id){
 		try {
 			Statement stmt = conn.createStatement();

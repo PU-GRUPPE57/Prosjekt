@@ -7,8 +7,10 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import event.Event;
 import notification.Listener;
 import notification.Varsel;
+import notification.Varsel.Messages;
 
 public class Group implements Listener {
 	
@@ -28,6 +30,7 @@ public class Group implements Listener {
 		this.admin=admin;
 	}
 	
+	//legger til bruker u:
 	public void addUser(Connection conn, User u){
 		if (id == -1) save(conn);
 		String addEventSql = "INSERT INTO BRUKERIGRUPPE VALUES " + "(" + id + "," + u.getId() + ")";
@@ -40,6 +43,7 @@ public class Group implements Listener {
 		}
 	}
 	
+	//fjerner bruker u:
 	public void removeUser(Connection conn, User u){
 		if (id == -1) save(conn);
 		String deleteUserSql = "DELETE FROM BRUKERIGRUPPE WHERE GRUPPEID=" + id + " AND BRUKERID=" + u.getId();
@@ -52,6 +56,7 @@ public class Group implements Listener {
 		}
 	}
 	
+	//lagrer:
 	public void save(Connection conn){
 		id = generateID(conn);
 		String addGroupSql = "INSERT INTO GRUPPE VALUES " + " (" + id + ",'"  + name + "',"+ admin.getId() +")";
@@ -66,7 +71,17 @@ public class Group implements Listener {
 		}
 	}
 	
-	public void fireMessage() {
+	
+	//UTESTET! fjerner ev fra alle medlemmene i gruppa:
+	public void removeEvent(Connection conn, Event ev){
+		List<User> users = ev.getUsers(conn);
+		for (User u : users){
+			u.removeEvent(conn, ev);
+		}
+	}
+	
+	
+	public void fireMessage(Messages e) {
 //		List<User> users = getUsers();
 //		for (User u : users){
 //			u.fireMessage();

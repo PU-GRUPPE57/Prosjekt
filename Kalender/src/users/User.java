@@ -4,6 +4,7 @@ import java.sql.*;
 
 import event.Event;
 import notification.Listener;
+import notification.Varsel.Messages;
 
 public class User implements Listener {
 
@@ -29,10 +30,29 @@ public class User implements Listener {
 		this.password=password;
 		this.id = id;
 	}
+	
+	//Sjekker om innloggingsinformasjon er riktig:
+	public static boolean login(Connection conn, String username, String password){
+		String sql= "SELECT BRUKERNAVN,PASSORD FROM BRUKER WHERE BRUKERNAVN = " + username;
+		try {
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(sql);
+			rs.next();
+			boolean log = rs.getString("password").equals(password);
+			stmt.close();
+			return log;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		throw new IllegalStateException("Login failed in class user for some reason");
+	}
+	
+	
+	
 	//legger til ev i user:
 	public void addEvent(Connection conn, Event ev){
 		if (id ==-1) this.save(conn);
-		String addEventSql = "INSERT INTO BRUKERIAVTALE VALUES " + "(" + id + "," + ev.getId() + ")";
+		String addEventSql = "INSERT INTO BRUKERIAVTALE VALUES " + "(" + id + "," + ev.getId() + "," + 0 + ")";
 		try {
 			Statement stmt = conn.createStatement();
 			stmt.executeUpdate(addEventSql);
@@ -42,10 +62,12 @@ public class User implements Listener {
 		}
 	}
 	
+	//legger til this i gruppe g:
 	public void addToGroup(Connection conn, Group g){
 		g.addUser(conn, this);
 	}
 	
+	//fjerner ev fra brukeriavtale:
 	public void removeEvent(Connection conn, Event ev){
 		if (id == -1) this.save(conn);
 		String deleteEventSql = "DELETE FROM BRUKERIAVTALE WHERE BRUKERID=" + id + " AND AVTALEID=" + ev.getId();
@@ -58,6 +80,7 @@ public class User implements Listener {
 		}
 	}
 	
+	//Lagrer:
 	public void save(Connection conn){
 		id = generateID(conn);
 		String addUserSql = "INSERT INTO BRUKER VALUES " + " (" + id + ",'"  + firstname + "','" + lastname + "','" + username + "','" + password + "')";
@@ -69,7 +92,8 @@ public class User implements Listener {
 			e.printStackTrace();
 		}
 	}
-	//Henter bruker med id-en som gis
+	
+	//Henter bruker med id-en som gis:
 	public static User getUser(Connection conn , int id){
 		try {
 			Statement stmt = conn.createStatement();
@@ -83,8 +107,23 @@ public class User implements Listener {
 		}
 		throw new IllegalStateException("failed to get user by id: " + id);
 	}
+	
+	//Henter bruker ved brukernavn
+	public static User getUser(Connection conn, String username){
+		try {
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM BRUKER WHERE BRUKERNAVN = " + username);
+			rs.next();
+			User u = new User(rs.getInt("BrukerID"), rs.getString("Fornavn"), rs.getString("Etternavn"), rs.getString("Brukernavn"), rs.getString("passord"));
+			stmt.close();
+			return u;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		throw new IllegalStateException("failed to get user by username: " + username);
+	}
 
-	public void fireMessage() {
+	public void fireMessage(Messages e) {
 		// TODO Auto-generated method stub
 
 	}
