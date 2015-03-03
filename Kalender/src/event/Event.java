@@ -150,4 +150,8 @@ public static Event getEvent(Connection conn , int id){
 	public String toString() {
 		return name + "ID: " + id;
 	}
+	
+	public String getName() {
+		return name;
+	}
 }

@@ -1,6 +1,8 @@
 package users;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import event.Event;
 import notification.Listener;
@@ -14,7 +16,7 @@ public class User implements Listener {
 	//Konstuktører
 	public User(String firstname,String lastname, String username, String password){
 		//isValidUser(firstname,lastname, username, password);
-		this.firstname=firstname;
+		this.firstname = firstname;
 		this.lastname = lastname;
 		this.username = username;
 		this.password = password;
@@ -24,10 +26,10 @@ public class User implements Listener {
 	//BRUKES TIL Å HENTE BRUKER VED ID
 	private User(int id,String firstname,String lastname, String username, String password){
 		//isValidUser(firstname,lastname, username, password);
-		this.firstname=firstname;
+		this.firstname = firstname;
 		this.lastname = lastname;
-		this.username=username;
-		this.password=password;
+		this.username = username;
+		this.password = password;
 		this.id = id;
 	}
 	
@@ -52,7 +54,7 @@ public class User implements Listener {
 	//legger til ev i user:
 	public void addEvent(Connection conn, Event ev){
 		if (id ==-1) this.save(conn);
-		String addEventSql = "INSERT INTO BRUKERIAVTALE VALUES " + "(" + id + "," + ev.getId() + "," + 0 + ")";
+		String addEventSql = "INSERT INTO BRUKERIAVTALE VALUES " + "(" + ev.getId() + "," + id + "," + 0 + ")";
 		try {
 			Statement stmt = conn.createStatement();
 			stmt.executeUpdate(addEventSql);
@@ -123,7 +125,7 @@ public class User implements Listener {
 		throw new IllegalStateException("failed to get user by username: " + username);
 	}
 
-	public void fireMessage(Messages e) {
+	public void fireMessage(String text) {
 		// TODO Auto-generated method stub
 
 	}
@@ -170,4 +172,26 @@ public class User implements Listener {
 		return "Bruker: " + id + firstname + lastname;
 	}
 	
+	//Returnerer alle events tilknyttet denne user:
+		public List<Event> getEvents(Connection conn){
+			List<Event> l = new ArrayList<Event>();
+			String sql = "SELECT AVTALE.AVTALEID FROM AVTALE, BRUKERIAVTALE WHERE AVTALE.AVTALEID=BRUKERIAVTALE.AVTALEID AND BRUKERIAVTALE.BRUKERID =" + this.id;
+			try {
+				Statement stmt = conn.createStatement();
+				ResultSet rs = stmt.executeQuery(sql);
+				while(rs.next()){
+					l.add(Event.getEvent(conn, rs.getInt("AVTALE.AVTALEID")));
+				}
+				stmt.close();
+				return l;
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			//TODO
+			throw new IllegalStateException("Noe gikk feil ved henting av inviterte brukere i event");
+		}
+	public String getUsername() {
+		return username;
+	}
+		
 }

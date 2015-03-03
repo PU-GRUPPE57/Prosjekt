@@ -33,6 +33,7 @@ CREATE TABLE `BrukerIgruppe` (
 CREATE TABLE `Rom`(
  	`RomID` INT UNSIGNED NOT NULL,
  	`Size` INT UNSIGNED NOT NULL,
+ 	`Navn` VARCHAR(45),
  	PRIMARY KEY (`RomID`)
  );
 
@@ -64,5 +65,20 @@ CREATE TABLE `BrukerIAvtale` (
 	FOREIGN KEY (`AvtaleID`) REFERENCES Avtale(`AvtaleID`)
  );
  
- 
+CREATE TABLE `BrukerHarVarsel` (
+	`BrukerID` INT UNSIGNED NOT NULL,
+	`VarselID` INT UNSIGNED NOT NULL,
+    
+	PRIMARY KEY (`BrukerID`,`AvtaleID`),
+	FOREIGN KEY (`BrukerID`) REFERENCES Bruker(`BrukerID`)
+		ON DELETE CASCADE ON UPDATE CASCADE,
+	FOREIGN KEY (`AvtaleID`) REFERENCES Avtale(`AvtaleID`)
+ ); 
  	
+CREATE TABLE `Varsel` (
+	`VarselID` INT UNSIGNED NOT NULL,
+	`Melding` VARCHAR(256),
+	`Meldingstype` INT UNSIGNED NOT NULL
+	
+	PRIMARY KEY (`VarselID`)
+	);

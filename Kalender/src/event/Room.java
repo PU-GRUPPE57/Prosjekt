@@ -15,6 +15,7 @@ public class Room {
 	
 	private int id;
 	private int size;
+	private String name;
 	private String type;
 	
 	
@@ -86,4 +87,9 @@ public class Room {
 	public String toString() {
 		return id + " " +size;
 	}
+	public String getName() {
+		return name;
+	}
+	
+	
 }

@@ -82,7 +82,7 @@ public class Group implements Listener {
 	}
 	
 	
-	public void fireMessage(Messages e) {
+	public void fireMessage(String text) {
 //		List<User> users = getUsers();
 //		for (User u : users){
 //			u.fireMessage();
@@ -137,6 +137,9 @@ public class Group implements Listener {
 			e.printStackTrace();
 		}
 		throw new IllegalStateException("ID-generation failed");
+	}
+	public String getName() {
+		return name;
 	}
 	
 	
