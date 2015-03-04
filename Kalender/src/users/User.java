@@ -5,10 +5,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import event.Event;
-import notification.Listener;
-import notification.Varsel.Messages;
+import notification.Varsel;
+import notification.Varsel.EventMessages;
 
-public class User implements Listener {
+public class User {
 
 	private String firstname,lastname, username, password;
 	private int id;
@@ -59,6 +59,9 @@ public class User implements Listener {
 			Statement stmt = conn.createStatement();
 			stmt.executeUpdate(addEventSql);
 			stmt.close();
+			Varsel v = new Varsel(this, EventMessages.USER_INVITE_EVENT, ev);
+			v.save(conn);
+			
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -125,8 +128,8 @@ public class User implements Listener {
 		throw new IllegalStateException("failed to get user by username: " + username);
 	}
 
-	public void fireMessage(String text) {
-		// TODO Auto-generated method stub
+	public void fireMessage(Connection conn,Varsel v) {
+		// add varseltekst til database med bruker this
 
 	}
 	//Test for restriksjoner i brukernavn, og navn //TODO passord

@@ -8,11 +8,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import event.Event;
-import notification.Listener;
 import notification.Varsel;
-import notification.Varsel.Messages;
+import notification.Varsel.EventMessages;
 
-public class Group implements Listener {
+public class Group {
 	
 	private int id;
 	private String name;
@@ -82,11 +81,11 @@ public class Group implements Listener {
 	}
 	
 	
-	public void fireMessage(String text) {
-//		List<User> users = getUsers();
-//		for (User u : users){
-//			u.fireMessage();
-//		}
+	public void fireMessage(Connection conn, Varsel v) {
+		List<User> users = getUsers(conn);
+		for (User u : users){
+			u.fireMessage(conn,v);
+		}
 	}
 	
 	//Henter alle brukere som er med i gruppen:
@@ -141,7 +140,14 @@ public class Group implements Listener {
 	public String getName() {
 		return name;
 	}
+	public User getAdmin() {
+		return admin;
+	}
 	
+	public int getId() {
+		if (id == -1) throw new IllegalStateException("Group id not set");
+		return id;
+	}
 	
 
 }

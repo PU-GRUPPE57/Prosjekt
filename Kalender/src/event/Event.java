@@ -154,4 +154,11 @@ public static Event getEvent(Connection conn , int id){
 	public String getName() {
 		return name;
 	}
+	
+	public User getOwner() {
+		return owner;
+	}
+	public Room getRom() {
+		return rom;
+	}
 }

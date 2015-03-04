@@ -33,7 +33,7 @@ public class Room {
 	public void save(Connection conn){
 		id = generateID(conn);
 		
-		String addRomSql = "INSERT INTO ROM VALUES " + "(" + id + ",'"  + size + "')";
+		String addRomSql = "INSERT INTO ROM VALUES " + "(" + id + ",'"  + size +"','" + "hey" + "')";
 		try {
 			Statement stmt = conn.createStatement();
 			stmt.executeUpdate(addRomSql);

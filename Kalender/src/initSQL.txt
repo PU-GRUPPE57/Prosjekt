@@ -41,7 +41,7 @@ CREATE TABLE `Avtale` (
   `AvtaleID` INT UNSIGNED NOT NULL,
   `RomID` INT UNSIGNED NOT NULL,
   `Name` VARCHAR(45) NOT NULL,
-  `Start` DATETIME NOT NULL,		//MySQL retrieves & displays DATETIME values in 'YYYY-MM-DD HH:MM:SS' format. The supported range is '1000-01-01 00:00:00' to '9999-12-31 23:59:59'.
+  `Start` DATETIME NOT NULL,		
   `Slutt` DATETIME NOT NULL,
   `Beskrivelse` VARCHAR(45),
   
@@ -65,20 +65,24 @@ CREATE TABLE `BrukerIAvtale` (
 	FOREIGN KEY (`AvtaleID`) REFERENCES Avtale(`AvtaleID`)
  );
  
+ 	
+CREATE TABLE `Varsel` (
+	`VarselID` INT UNSIGNED NOT NULL,
+	`GruppeID` INT UNSIGNED,
+	`Melding` VARCHAR(256),
+	`Meldingstype` INT UNSIGNED NOT NULL,
+	
+	PRIMARY KEY (`VarselID`),
+	FOREIGN KEY (`GruppeID`) REFERENCES Gruppe(`GruppeID`)
+	);
+    
+    
 CREATE TABLE `BrukerHarVarsel` (
 	`BrukerID` INT UNSIGNED NOT NULL,
 	`VarselID` INT UNSIGNED NOT NULL,
     
-	PRIMARY KEY (`BrukerID`,`AvtaleID`),
+	PRIMARY KEY (`BrukerID`,`VarselID`),
 	FOREIGN KEY (`BrukerID`) REFERENCES Bruker(`BrukerID`)
 		ON DELETE CASCADE ON UPDATE CASCADE,
-	FOREIGN KEY (`AvtaleID`) REFERENCES Avtale(`AvtaleID`)
+	FOREIGN KEY (`VarselID`) REFERENCES Varsel(`VarselID`)
  ); 
- 	
-CREATE TABLE `Varsel` (
-	`VarselID` INT UNSIGNED NOT NULL,
-	`Melding` VARCHAR(256),
-	`Meldingstype` INT UNSIGNED NOT NULL
-	
-	PRIMARY KEY (`VarselID`)
-	);
