@@ -19,6 +19,7 @@ public class Varsel {
 	private User user, repliedUser;
 	private String text;
 
+	//Konstruktører:
 	public Varsel(User user, EventMessages m, Event e){
 		this.event = e;
 		this.user = user;
@@ -26,8 +27,6 @@ public class Varsel {
 		type = 1;
 		generateText(m);
 	}
-
-
 	public Varsel(User user, GroupMessages m, Group g){
 		this.group = g;
 		this.user = user;
@@ -35,7 +34,6 @@ public class Varsel {
 		type = 2;
 		generateText(m);
 	}
-
 	public Varsel(User user, UserMessages m, User u, Event e){
 		this.user = user;
 		this.repliedUser = u;
@@ -44,7 +42,7 @@ public class Varsel {
 		type = 3;
 		generateText(m);
 	}
-
+	//Brukes kun til å hente ved id:
 	private Varsel(Connection conn, int id, Event e, Group g, User repliedUser, String text, int type){
 		this.id=id;
 		this.event = e;
@@ -84,7 +82,7 @@ public class Varsel {
 			e.printStackTrace();
 		}
 	}
-
+	//Generer id:
 	private int generateID(Connection conn){
 		int res;
 		try {
@@ -100,19 +98,17 @@ public class Varsel {
 		}
 		throw new IllegalStateException("ID-generation failed");
 	}
-
+	//Meldingstyper:
 	public static enum EventMessages{
 		USER_INVITE_EVENT, ROM_RESERVERT, EVENT_ENDRET;
 	}
-
 	public static enum GroupMessages{
 		USER_ADDED, USER_REMOVED;
 	}
-
 	public static enum UserMessages{
 		EVENT_ACCEPTED, EVENT_DECLINED;
 	}
-
+	//Generer meldingstekst:
 	private void generateText(GroupMessages g){
 		switch (g){
 		case USER_ADDED: text = "Du har blitt lagt til i gruppe: " + group.getName() + " av: " + group.getAdmin().getUsername();
@@ -132,7 +128,6 @@ public class Varsel {
 		case ROM_RESERVERT: text = "Rommet: " + event.getRom().getName() + " har blitt reservert for: " + event.getName();
 		break;
 		}
-
 	}
 	private void generateText(UserMessages u){
 		switch (u){
@@ -142,7 +137,7 @@ public class Varsel {
 		break;
 		}
 	}
-
+	//Henter varselobjekt med gitt id:
 	public static Varsel getVarsel(Connection conn , int id){
 		try {
 			Statement stmt = conn.createStatement();
@@ -160,5 +155,4 @@ public class Varsel {
 	public String toString() {
 		return text;
 	}
-
 }

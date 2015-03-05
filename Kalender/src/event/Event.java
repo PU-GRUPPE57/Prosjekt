@@ -146,6 +146,7 @@ public class Event {
 	
 	//henter event ved id:
 public static Event getEvent(Connection conn , int id){
+		if (id == 0) return null;
 		try {
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM AVTALE WHERE AVTALEID = " + id);

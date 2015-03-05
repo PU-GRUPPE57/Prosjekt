@@ -13,27 +13,27 @@ import users.User;
 
 public class Room {
 	
-	private int id;
-	private int size;
-	private String name;
-	private String type;
+	private int id, size;
+	private String name, type;
 	
 	
-	public Room(int size){
+	public Room(int size, String name, String type){
 		this.id= -1;
-		this.size=size;
+		this.size = size;
+		this.name = name;
+		this.type = type;
 	}
-	
 	//brukes til å hente rom ved id
-	private Room(int id, int size){
+	private Room(int id, int size, String name, String type){
 		this.id=id;
 		this.size=size;
+		this.name = name;
+		this.type = type;
 	}
 	
 	public void save(Connection conn){
 		id = generateID(conn);
-		
-		String addRomSql = "INSERT INTO ROM VALUES " + "(" + id + ",'"  + size +"','" + "hey" + "')";
+		String addRomSql = "INSERT INTO ROM VALUES " + "(" + id + ",'"  + size +"','" + name + "','" + type + "')";
 		try {
 			Statement stmt = conn.createStatement();
 			stmt.executeUpdate(addRomSql);
@@ -48,7 +48,7 @@ public class Room {
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM ROM WHERE ROMID = " + id);
 			rs.next();
-			Room r = new Room(rs.getInt("Romid"), rs.getInt("Size"));
+			Room r = new Room(rs.getInt("Romid"), rs.getInt("Size"), rs.getString("Navn"), rs.getString("Type"));
 			stmt.close();
 			return r;
 		} catch (SQLException e) {
@@ -90,6 +90,4 @@ public class Room {
 	public String getName() {
 		return name;
 	}
-	
-	
 }

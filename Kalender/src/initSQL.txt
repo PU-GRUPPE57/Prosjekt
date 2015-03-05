@@ -34,6 +34,7 @@ CREATE TABLE `Rom`(
  	`RomID` INT UNSIGNED NOT NULL,
  	`Size` INT UNSIGNED NOT NULL,
  	`Navn` VARCHAR(45),
+ 	`Type` VARCHAR(45),
  	PRIMARY KEY (`RomID`)
  );
 
