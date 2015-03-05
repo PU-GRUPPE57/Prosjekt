@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import notification.Varsel;
+import notification.Varsel.UserMessages;
 import users.Admin;
 import users.User;
 
@@ -59,6 +61,20 @@ public class Event {
 			stmt.close();
 			addUser(conn,owner);
 			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void replyToInvitation(Connection conn,User u, int reply){
+		if (reply<1 || reply>2) throw new IllegalArgumentException("Invalid reply to invitation");
+		String sql = "UPDATE BRUKERIAVTALE SET STATUS= " + reply + " WHERE AVTALEID= " + id +" AND BRUKERID= " + u.getId();
+		try {
+			Statement stmt = conn.createStatement();
+			stmt.executeUpdate(sql);
+			stmt.close();
+			Varsel v = new Varsel(owner, reply==1 ? UserMessages.EVENT_ACCEPTED : UserMessages.EVENT_DECLINED, u , this);
+			v.save(conn);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

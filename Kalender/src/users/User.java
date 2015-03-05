@@ -73,8 +73,9 @@ public class User {
 	}
 	
 	//fjerner ev fra brukeriavtale:
-	public void removeEvent(Connection conn, Event ev){
+	public void removeEvent(Connection conn, Event ev, User u){
 		if (id == -1) this.save(conn);
+		if (!u.equals(ev.getOwner())) throw new IllegalArgumentException("Command attempted without authorization: removed event from user");
 		String deleteEventSql = "DELETE FROM BRUKERIAVTALE WHERE BRUKERID=" + id + " AND AVTALEID=" + ev.getId();
 		try {
 			Statement stmt = conn.createStatement();

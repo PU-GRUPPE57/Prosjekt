@@ -80,10 +80,10 @@ public class Group {
 	
 	//Fjerner ev fra alle medlemmene i gruppa:
 	//TODO test
-	public void removeEvent(Connection conn, Event ev){
+	public void removeEvent(Connection conn, Event ev, User us){
 		List<User> users = ev.getUsers(conn);
 		for (User u : users){
-			u.removeEvent(conn, ev);
+			u.removeEvent(conn, ev, us);
 		}
 	}
 	

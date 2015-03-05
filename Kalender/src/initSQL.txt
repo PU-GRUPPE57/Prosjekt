@@ -70,12 +70,15 @@ CREATE TABLE `Varsel` (
 	`VarselID` INT UNSIGNED NOT NULL,
 	`AvtaleID` INT UNSIGNED,
 	`GruppeID` INT UNSIGNED,
+	`Brukersomvarsler` INT UNSIGNED,
 	`Melding` VARCHAR(256),
 	`Meldingstype` INT UNSIGNED NOT NULL,
 	
 	PRIMARY KEY (`VarselID`),
 	FOREIGN KEY (`AvtaleID`) REFERENCES Avtale(`AvtaleID`),
-	FOREIGN KEY (`GruppeID`) REFERENCES Gruppe(`GruppeID`)
+	FOREIGN KEY (`GruppeID`) REFERENCES Gruppe(`GruppeID`),
+	FOREIGN KEY (`Brukersomvarsler`) REFERENCES Bruker(`BrukerID`)
+	
 	);
     
     

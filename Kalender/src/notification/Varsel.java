@@ -16,6 +16,7 @@ public class Varsel {
 	private int id;
 	private Event event;
 	private Group group;
+	private User repliedUser;
 	private String text;
 	private int type;
 	private User user;
@@ -25,7 +26,7 @@ public class Varsel {
 		this.user = user;
 		this.group = null;
 		type = 1;
-		generateText(null, m);
+		generateText(null, m,null);
 	}
 
 
@@ -34,15 +35,25 @@ public class Varsel {
 		this.user = user;
 		this.event = null;
 		type = 2;
-		generateText(m,null);
+		generateText(m,null,null);
+	}
+
+	public Varsel(User user, UserMessages m, User u, Event e){
+		this.user = user;
+		this.repliedUser = u;
+		this.event = e;
+		this.group=null;
+		type = 3;
+		generateText(null,null,m);
 	}
 
 	//Lagrer:
 	public void save(Connection conn){
 		id = generateID(conn);
 		String sql1;
-		if (group==null) sql1 = "INSERT INTO VARSEL VALUES " + " (" + id + "," + event.getId() + "," + null + ",'" + text + "'," + type + ")";			
-		else if (event == null) sql1 = "INSERT INTO VARSEL VALUES " + " (" + id + "," + null + "," + group.getId() + ",'" + text + "'," + type + ")";
+		if (repliedUser != null) sql1 = "INSERT INTO VARSEL VALUES " + " (" + id +"," + event.getId() + "," + null + "," + repliedUser.getId() + ",'" + text + "'," + type + ")"; 
+		else if (event!=null) sql1 = "INSERT INTO VARSEL VALUES " + " (" + id + "," + event.getId() + "," + null + "," + null +",'" + text + "'," + type + ")";			
+		else if (group != null) sql1 = "INSERT INTO VARSEL VALUES " + " (" + id + "," + null + "," + group.getId() + "," + null + ",'" + text + "'," + type + ")";
 		else throw new IllegalStateException("Varsel ikke laget");
 		String sql2 = "INSERT INTO BRUKERHARVARSEL VALUES " + " (" + user.getId() + "," + this.id + ")";
 		try {
@@ -78,7 +89,12 @@ public class Varsel {
 	public static enum GroupMessages{
 		USER_ADDED, USER_REMOVED;
 	}
-	private void generateText(GroupMessages g, EventMessages e){
+
+	public static enum UserMessages{
+		EVENT_ACCEPTED, EVENT_DECLINED;
+	}
+
+	private void generateText(GroupMessages g, EventMessages e, UserMessages u){
 		if (e != null){
 			switch (e){
 			case USER_INVITE_EVENT: text = "Du har blitt invitert til en avtale: " + event.getName() + " av: " + event.getOwner().getUsername();
@@ -100,6 +116,13 @@ public class Varsel {
 			}
 
 		}
-		//		case EVENT_DECLINED: text =  "Bruker: " + user.getUsername() + " har declined invitasjon til: " + event.getName();
+		else if (u!=null){
+			switch (u){
+			case EVENT_ACCEPTED: text = "Bruker: " + repliedUser.getUsername() + " har akseptert invitasjon til: " + event.getName();
+			break;
+			case EVENT_DECLINED: text =  "Bruker: " + repliedUser.getUsername() + " har avvist invitasjon til: " + event.getName();
+			break;
+			}
+		}
 	}
 }
