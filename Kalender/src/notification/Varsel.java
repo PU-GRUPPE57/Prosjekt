@@ -40,17 +40,15 @@ public class Varsel {
 	//Lagrer:
 	public void save(Connection conn){
 		id = generateID(conn);
-		System.out.println(id);
 		String sql1;
-		if (group==null){
-			sql1 = "INSERT INTO VARSEL VALUES " + " (" + id + "," + null + ",'" + text + "'," + type + ")";			
-		}else sql1 = "INSERT INTO VARSEL VALUES " + " (" + id + "," + group.getId() + ",'" + text + "'," + type + ")";
+		if (group==null) sql1 = "INSERT INTO VARSEL VALUES " + " (" + id + "," + event.getId() + "," + null + ",'" + text + "'," + type + ")";			
+		else if (event == null) sql1 = "INSERT INTO VARSEL VALUES " + " (" + id + "," + null + "," + group.getId() + ",'" + text + "'," + type + ")";
+		else throw new IllegalStateException("Varsel ikke laget");
 		String sql2 = "INSERT INTO BRUKERHARVARSEL VALUES " + " (" + user.getId() + "," + this.id + ")";
 		try {
 			Statement stmt = conn.createStatement();
 			stmt.executeUpdate(sql1);
 			stmt.executeUpdate(sql2);
-
 			stmt.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -88,6 +86,7 @@ public class Varsel {
 			//TODO
 			case EVENT_ENDRET: text = "Eventet: " + event.getName() + " har blitt endret";
 			break;
+			//TODO
 			case ROM_RESERVERT: text = "Rommet: " + event.getRom().getName() + " har blitt reservert for: " + event.getName();
 			break;
 			}

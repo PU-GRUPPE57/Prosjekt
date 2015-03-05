@@ -79,7 +79,7 @@ public class User {
 		try {
 			Statement stmt = conn.createStatement();
 			stmt.executeUpdate(deleteEventSql);
-			stmt.close();
+			stmt.close();			
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -127,11 +127,7 @@ public class User {
 		}
 		throw new IllegalStateException("failed to get user by username: " + username);
 	}
-
-	public void fireMessage(Connection conn,Varsel v) {
-		// add varseltekst til database med bruker this
-
-	}
+	
 	//Test for restriksjoner i brukernavn, og navn //TODO passord
 	private boolean isValidUser(String firstname,String lastname, String username, String password){
 		if (!(firstname.matches("[a-ÂA-≈]+"))){

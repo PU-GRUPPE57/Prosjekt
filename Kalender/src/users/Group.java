@@ -10,6 +10,7 @@ import java.util.List;
 import event.Event;
 import notification.Varsel;
 import notification.Varsel.EventMessages;
+import notification.Varsel.GroupMessages;
 
 public class Group {
 	
@@ -37,6 +38,10 @@ public class Group {
 			Statement stmt = conn.createStatement();
 			stmt.executeUpdate(addEventSql);
 			stmt.close();
+			Varsel v = new Varsel(u, GroupMessages.USER_ADDED, this);
+			v.save(conn);
+			
+			
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -50,6 +55,8 @@ public class Group {
 			Statement stmt = conn.createStatement();
 			stmt.executeUpdate(deleteUserSql);
 			stmt.close();
+			Varsel v = new Varsel(u, GroupMessages.USER_REMOVED, this);
+			v.save(conn);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -77,14 +84,6 @@ public class Group {
 		List<User> users = ev.getUsers(conn);
 		for (User u : users){
 			u.removeEvent(conn, ev);
-		}
-	}
-	
-	
-	public void fireMessage(Connection conn, Varsel v) {
-		List<User> users = getUsers(conn);
-		for (User u : users){
-			u.fireMessage(conn,v);
 		}
 	}
 	
