@@ -13,20 +13,18 @@ import users.User;
 
 public class Varsel {
 
-	private int id;
+	private int id, type;
 	private Event event;
 	private Group group;
-	private User repliedUser;
+	private User user, repliedUser;
 	private String text;
-	private int type;
-	private User user;
 
 	public Varsel(User user, EventMessages m, Event e){
 		this.event = e;
 		this.user = user;
 		this.group = null;
 		type = 1;
-		generateText(null, m,null);
+		generateText(m);
 	}
 
 
@@ -35,7 +33,7 @@ public class Varsel {
 		this.user = user;
 		this.event = null;
 		type = 2;
-		generateText(m,null,null);
+		generateText(m);
 	}
 
 	public Varsel(User user, UserMessages m, User u, Event e){
@@ -44,7 +42,28 @@ public class Varsel {
 		this.event = e;
 		this.group=null;
 		type = 3;
-		generateText(null,null,m);
+		generateText(m);
+	}
+
+	private Varsel(Connection conn, int id, Event e, Group g, User repliedUser, String text, int type){
+		this.id=id;
+		this.event = e;
+		this.group = g;
+		this.repliedUser = repliedUser;
+		this.text = text;
+		this.type = type;
+		String sql = "SELECT BRUKERID FROM BRUKERHARVARSEL WHERE VARSELID= " +id;
+		try {
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(sql);
+			rs.next();
+			this.user = User.getUser(conn, rs.getInt("BRUKERID"));
+			stmt.close();
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
+
+
 	}
 
 	//Lagrer:
@@ -94,35 +113,52 @@ public class Varsel {
 		EVENT_ACCEPTED, EVENT_DECLINED;
 	}
 
-	private void generateText(GroupMessages g, EventMessages e, UserMessages u){
-		if (e != null){
-			switch (e){
-			case USER_INVITE_EVENT: text = "Du har blitt invitert til en avtale: " + event.getName() + " av: " + event.getOwner().getUsername();
-			break;
-			//TODO
-			case EVENT_ENDRET: text = "Eventet: " + event.getName() + " har blitt endret";
-			break;
-			//TODO
-			case ROM_RESERVERT: text = "Rommet: " + event.getRom().getName() + " har blitt reservert for: " + event.getName();
-			break;
-			}
-		}
-		else if (g!=null){
-			switch (g){
-			case USER_ADDED: text = "Du har blitt lagt til i gruppe: " + group.getName() + " av: " + group.getAdmin().getUsername();
-			break;
-			case USER_REMOVED: text = "Du har blitt fjernet fra gruppe: " + group.getName() + " av: " + group.getAdmin().getUsername();
-			break;
-			}
-
-		}
-		else if (u!=null){
-			switch (u){
-			case EVENT_ACCEPTED: text = "Bruker: " + repliedUser.getUsername() + " har akseptert invitasjon til: " + event.getName();
-			break;
-			case EVENT_DECLINED: text =  "Bruker: " + repliedUser.getUsername() + " har avvist invitasjon til: " + event.getName();
-			break;
-			}
+	private void generateText(GroupMessages g){
+		switch (g){
+		case USER_ADDED: text = "Du har blitt lagt til i gruppe: " + group.getName() + " av: " + group.getAdmin().getUsername();
+		break;
+		case USER_REMOVED: text = "Du har blitt fjernet fra gruppe: " + group.getName() + " av: " + group.getAdmin().getUsername();
+		break;
 		}
 	}
+	private void generateText(EventMessages e){
+		switch (e){
+		case USER_INVITE_EVENT: text = "Du har blitt invitert til en avtale: " + event.getName() + " av: " + event.getOwner().getUsername();
+		break;
+		//TODO
+		case EVENT_ENDRET: text = "Eventet: " + event.getName() + " har blitt endret";
+		break;
+		//TODO
+		case ROM_RESERVERT: text = "Rommet: " + event.getRom().getName() + " har blitt reservert for: " + event.getName();
+		break;
+		}
+
+	}
+	private void generateText(UserMessages u){
+		switch (u){
+		case EVENT_ACCEPTED: text = "Bruker: " + repliedUser.getUsername() + " har akseptert invitasjon til: " + event.getName();
+		break;
+		case EVENT_DECLINED: text =  "Bruker: " + repliedUser.getUsername() + " har avvist invitasjon til: " + event.getName();
+		break;
+		}
+	}
+
+	public static Varsel getVarsel(Connection conn , int id){
+		try {
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM Varsel WHERE VARSELID = " + id);
+			rs.next();
+			Varsel v = new Varsel(conn, id,Event.getEvent(conn, rs.getInt("AvtaleID")) , Group.getGroup(conn, rs.getInt("GruppeID")), User.getUser(conn, rs.getInt("Brukersomvarsler")), rs.getString("Melding"),rs.getInt("Meldingstype")); 
+			stmt.close();
+			return v;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		throw new IllegalStateException("failed to get event by id: " + id );
+	}
+	@Override
+	public String toString() {
+		return text;
+	}
+
 }

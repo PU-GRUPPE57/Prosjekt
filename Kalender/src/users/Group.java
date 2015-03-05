@@ -108,6 +108,7 @@ public class Group {
 	}
 	//Henter gruppe med gitt id:
 	public static Group getGroup(Connection conn, int id){
+		if (id==0) return null;
 		try {
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM GRUPPE WHERE GRUPPEID = " + id);

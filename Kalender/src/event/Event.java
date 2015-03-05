@@ -16,14 +16,11 @@ import users.User;
 
 public class Event {
 
-	private int id;
-	private String name;
+	private int id, priority;
+	private String name, description;
 	private Room rom;
 	private User owner;
-	private int priority;
-	private Timestamp start;
-	private Timestamp end;
-	private String description;
+	private Timestamp start, end;
 	
 
 	public Event(String name, int priority, Room rom, User owner, Timestamp start, Timestamp slutt, String description){

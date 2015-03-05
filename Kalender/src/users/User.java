@@ -101,6 +101,7 @@ public class User {
 	
 	//Henter bruker med id-en som gis:
 	public static User getUser(Connection conn , int id){
+		if (id==0) return null;
 		try {
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM BRUKER WHERE BRUKERID = " + id);
@@ -181,6 +182,24 @@ public class User {
 				ResultSet rs = stmt.executeQuery(sql);
 				while(rs.next()){
 					l.add(Event.getEvent(conn, rs.getInt("AVTALE.AVTALEID")));
+				}
+				stmt.close();
+				return l;
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			//TODO
+			throw new IllegalStateException("Noe gikk feil ved henting av inviterte brukere i event");
+		}
+		//returnerer en liste som inneholder alle varslene brukeren har:
+		public List<Varsel> getNotifications(Connection conn){
+			List<Varsel> l = new ArrayList<Varsel>();
+			String sql = "SELECT VARSEL.VARSELID FROM VARSEL, BRUKERHARVARSEL WHERE VARSEL.VARSELID=BRUKERHARVARSEL.VARSELID AND BRUKERHARVARSEL.BRUKERID =" + this.id;
+			try {
+				Statement stmt = conn.createStatement();
+				ResultSet rs = stmt.executeQuery(sql);
+				while(rs.next()){
+					l.add(Varsel.getVarsel(conn, rs.getInt("VARSEL.VARSELID")));
 				}
 				stmt.close();
 				return l;
