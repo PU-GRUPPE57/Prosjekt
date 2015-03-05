@@ -88,3 +88,15 @@ CREATE TABLE `BrukerHarVarsel` (
 		ON DELETE CASCADE ON UPDATE CASCADE,
 	FOREIGN KEY (`VarselID`) REFERENCES Varsel(`VarselID`)
  ); 
+ 
+ 
+ CREATE TABLE `romRes`(
+	`RomID` INT UNSIGNED NOT NULL,
+    `Start` DATETIME NOT NULL,		
+	`Slutt` DATETIME NOT NULL,
+    
+	PRIMARY KEY (`RomID`, `Start`, `Slutt`),
+    FOREIGN KEY (`RomID`) REFERENCES Rom(`RomID`)
+    		ON DELETE CASCADE ON UPDATE CASCADE
+    );
+ 
