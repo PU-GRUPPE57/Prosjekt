@@ -14,17 +14,22 @@ import users.User;
 public class Room {
 	
 	private int id, size;
-	private String name, type;
+	private String name;
+	private Types type;
 	
 	
-	public Room(int size, String name, String type){
+	public static enum Types{
+		MØTEROM, KONFERANSEROM, GRUPPEROM, DATASAL, AUDITORIUM;
+	}
+	
+	public Room(int size, String name, Types type){
 		this.id= -1;
 		this.size = size;
 		this.name = name;
 		this.type = type;
 	}
 	//brukes til å hente rom ved id
-	private Room(int id, int size, String name, String type){
+	private Room(int id, int size, String name, Types type){
 		this.id=id;
 		this.size=size;
 		this.name = name;
@@ -48,7 +53,7 @@ public class Room {
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM ROM WHERE ROMID = " + id);
 			rs.next();
-			Room r = new Room(rs.getInt("Romid"), rs.getInt("Size"), rs.getString("Navn"), rs.getString("Type"));
+			Room r = new Room(rs.getInt("Romid"), rs.getInt("Size"), rs.getString("Navn"), Types.valueOf(rs.getString("Type")));
 			stmt.close();
 			return r;
 		} catch (SQLException e) {
