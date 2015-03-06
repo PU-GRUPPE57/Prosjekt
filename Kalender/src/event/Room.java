@@ -8,6 +8,8 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
+import notification.Varsel;
+import notification.Varsel.EventMessages;
 import users.Admin;
 import users.User;
 
@@ -19,7 +21,7 @@ public class Room {
 	
 	
 	public static enum Types{
-		MØTEROM, KONFERANSEROM, GRUPPEROM, DATASAL, AUDITORIUM;
+		MOTEROM, KONFERANSEROM, GRUPPEROM, DATASAL, AUDITORIUM;
 	}
 	
 	public Room(int size, String name, Types type){
@@ -87,6 +89,26 @@ public class Room {
 		}
 		throw new IllegalStateException("ID-generation failed");
 	}
+	//Fungerer ikke enda
+	public void romRes(Connection conn, Event ev){
+		if (id ==-1) this.save(conn);
+		String addEventSql = "INSERT INTO ROMRES VALUES " + "(" + id + "," + ev.getId() + "," + 0 + ")";
+		try {
+			Statement stmt = conn.createStatement();
+			stmt.executeUpdate(addEventSql);
+			stmt.close();
+			List<User> participants = ev.getUsers(conn);
+			for (User user : participants) {
+				Varsel v = new Varsel(user, EventMessages.ROM_RESERVERT, ev);
+				v.save(conn);				
+			}
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	
 	
 	@Override
 	public String toString() {
