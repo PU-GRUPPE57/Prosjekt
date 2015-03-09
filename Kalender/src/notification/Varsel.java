@@ -6,6 +6,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
+import javafx.beans.property.Property;
+import javafx.beans.property.SimpleStringProperty;
 import event.Event;
 import event.Room;
 import users.Group;
@@ -154,5 +156,9 @@ public class Varsel {
 	@Override
 	public String toString() {
 		return text;
+	}
+	
+	public SimpleStringProperty textProperty() {
+		return new SimpleStringProperty(text);
 	}
 }
