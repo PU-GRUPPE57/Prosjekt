@@ -92,7 +92,7 @@ public class Room {
 	//Fungerer ikke enda
 	public void romRes(Connection conn, Event ev){
 		if (id ==-1) this.save(conn);
-		String addEventSql = "INSERT INTO ROMRES VALUES " + "(" + id + "," + ev.getId() + "," + 0 + ")";
+		String addEventSql = "INSERT INTO ROMRES VALUES " + "(" + id + ",'" + new Timestamp(0) + "','" + new Timestamp(10) + "')";
 		try {
 			Statement stmt = conn.createStatement();
 			stmt.executeUpdate(addEventSql);

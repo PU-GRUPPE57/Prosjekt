@@ -57,6 +57,7 @@ public class Event {
 			stmt.executeUpdate(addEventSql);
 			stmt.close();
 			addUser(conn,owner);
+			rom.romRes(conn, this);
 			
 		} catch (SQLException e) {
 			e.printStackTrace();

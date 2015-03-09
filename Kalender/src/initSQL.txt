@@ -6,6 +6,8 @@ CREATE TABLE `Bruker` (
   `Fornavn` VARCHAR(45) NOT NULL,
   `Etternavn` VARCHAR(45) NOT NULL,
   
+  `IsAdmin` INT NOT NULL,
+  
   `Brukernavn` VARCHAR(45) NOT NULL UNIQUE,
   `Passord`	VARCHAR(45) NOT NULL,
   
@@ -58,6 +60,7 @@ CREATE TABLE `BrukerIAvtale` (
 	`AvtaleID` INT UNSIGNED NOT NULL,
 	`BrukerID` INT UNSIGNED NOT NULL,
 	`Status` INT UNSIGNED NOT NULL,
+	`Synlighet` INT NOT NULL,
 	
     
 	PRIMARY KEY (`BrukerID`,`AvtaleID`),
