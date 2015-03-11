@@ -4,6 +4,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import users.Group;
 import event.Event;
 import notification.Varsel;
 import notification.Varsel.EventMessages;
@@ -40,15 +41,16 @@ public class User {
 
 	//Sjekker om innloggingsinformasjon er riktig:
 	//TODO TEST
-	public static boolean login(Connection conn, String username, String password){
-		String sql= "SELECT BRUKERNAVN,PASSORD FROM BRUKER WHERE BRUKERNAVN = " + username;
+	public static User login(Connection conn, String username, String password){
+		String sql= "SELECT BRUKERNAVN,PASSORD FROM BRUKER WHERE BRUKERNAVN = '" + username + "'";
 		try {
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(sql);
 			rs.next();
-			boolean log = rs.getString("password").equals(password);
+			boolean log = rs.getString("passord").equals(password);
 			stmt.close();
-			return log;
+			if (log) return User.getUser(conn, username);
+			else return null;
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -126,7 +128,7 @@ public class User {
 	public static User getUser(Connection conn, String username){
 		try {
 			Statement stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM BRUKER WHERE BRUKERNAVN = " + username);
+			ResultSet rs = stmt.executeQuery("SELECT * FROM BRUKER WHERE BRUKERNAVN = '" + username + "'");
 			rs.next();
 			User u = new User(rs.getInt("BrukerID"), rs.getString("Fornavn"), rs.getString("Etternavn"), rs.getString("Brukernavn"), rs.getString("passord"), rs.getInt("isAdmin") == 1);
 			stmt.close();

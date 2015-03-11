@@ -24,29 +24,25 @@ import javafx.stage.Stage;
 
 
 public class Hovedmeny extends Application{
-	public static void main(String[] args) {
-		launch(args);
-	}
+
 	public void start(final Stage primaryStage){
-		primaryStage.setTitle("Kalender - Hovedmeny");
+		primaryStage.setTitle("Kalender - Hovedmeny - " + Login.me.getName());
 		GridPane grid = new GridPane();
 		grid.setAlignment(Pos.CENTER);
 		grid.setHgap(10);
 		grid.setVgap(10);
 		grid.setPadding(new Insets(25, 25, 25, 25));
-		HBox hbBtn = new HBox(10);
-		hbBtn.setAlignment(Pos.BOTTOM_RIGHT);
-		grid.add(hbBtn, 1, 4);	
+
 		Button btn1 = new Button("Varsel");
-		hbBtn.getChildren().add(btn1);
+		grid.add(btn1, 0,1);
 		Button btn2 = new Button("Kalender");
-		hbBtn.getChildren().add(btn2);
+		grid.add(btn2, 1, 1);
 		Button btn3 = new Button("Grupper");
-		hbBtn.getChildren().add(btn3);
+		grid.add(btn3, 0, 2);
 		Button btn4 = new Button("Eventer");
-		hbBtn.getChildren().add(btn4);
+		grid.add(btn4, 1 , 2);
 		Button btn5 = new Button("Logg ut");
-		hbBtn.getChildren().add(btn5);
+		grid.add(btn5, 1,3);
 //		Button btn6 = new Button("");
 //		hbBtn.getChildren().add(btn6);
 //		Button btn7 = new Button("");
@@ -62,6 +58,23 @@ public class Hovedmeny extends Application{
 		Text scenetitle = new Text("PU er kjempegøy");
 		scenetitle.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
 		grid.add(scenetitle, 0, 0, 2, 1);
+		
+		btn1.setOnAction(new EventHandler<ActionEvent>() {
+			public void handle(ActionEvent e){
+				RenderNotifications r = new RenderNotifications();
+				r.start(primaryStage);
+			}
+		});
+		
+		btn5.setOnAction(new EventHandler<ActionEvent>() {
+			public void handle(ActionEvent e){
+				Login.me = null;
+				Login l = new Login();
+				l.start(primaryStage);
+			}
+		});
+		
+		
 		primaryStage.show();
 		//		btnLogin.setOnAction(new EventHandler<ActionEvent>() {
 		//			public void handle(ActionEvent e){

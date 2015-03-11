@@ -1,6 +1,7 @@
 package gui;
 import java.sql.Connection;
 import java.util.Scanner;
+
 import users.Admin;
 import users.User;
 import javafx.application.Application;
@@ -22,12 +23,11 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
-public class Login extends Application{
+public class Nybruker extends Application{
 	
-	public static User me = null;
 
 	public void start(final Stage primaryStage){
-		primaryStage.setTitle("Kalender - Log inn");
+		primaryStage.setTitle("Kalender - Ny bruker");
 		
 		GridPane grid = new GridPane();
 		grid.setAlignment(Pos.CENTER);
@@ -35,47 +35,53 @@ public class Login extends Application{
 		grid.setVgap(10);
 		grid.setPadding(new Insets(25, 25, 25, 25));
 		
-		Button btnLogin = new Button("Sign in");
+		Button btn1 = new Button("Opprett bruker");
 		HBox hbBtn = new HBox(10);
 		hbBtn.setAlignment(Pos.BOTTOM_RIGHT);
-		hbBtn.getChildren().add(btnLogin);
-		grid.add(hbBtn, 1, 4);
+		hbBtn.getChildren().add(btn1);
+		grid.add(hbBtn, 1, 5);
 		
-		Button btnNewUser = new Button("New user");
-		hbBtn.getChildren().add(btnNewUser);
+		Button btn2 = new Button("Tilbake");
+		hbBtn.getChildren().add(btn2);
 		Scene scene = new Scene(grid, 300, 275);
 		primaryStage.setScene(scene);
 		
-		Text scenetitle = new Text("Welcome");
+		Text scenetitle = new Text("Skriv inn informasjonen");
 		scenetitle.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
 		grid.add(scenetitle, 0, 0, 2, 1);
-		Label userName = new Label("User Name:");
-		grid.add(userName, 0, 1);
-		final TextField userTextField = new TextField();
-		grid.add(userTextField, 1, 1);
-		Label pw = new Label("Password:");
-		grid.add(pw, 0, 2);
+		Label name1 = new Label("Fornavn:");
+		grid.add(name1, 0, 1);
+		final TextField name1Box = new TextField();
+		grid.add(name1Box, 1, 1);
+		Label name2 = new Label("Etternavn:");
+		grid.add(name2, 0, 2);
+		final TextField name2Box = new TextField();
+		grid.add(name2Box, 1, 2);
+		Label brukernavn = new Label("Brukernavn:");
+		grid.add(brukernavn, 0, 3);
+		final TextField brukernavnBox = new TextField();
+		grid.add(brukernavnBox, 1, 3);
+		Label pw = new Label("Passord:");
+		grid.add(pw, 0, 4);
 		final PasswordField pwBox = new PasswordField();
-		grid.add(pwBox, 1, 2);
+		grid.add(pwBox, 1, 4);
+		
 		
 		primaryStage.show();
 		
-		btnLogin.setOnAction(new EventHandler<ActionEvent>() {
+		btn1.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent e){
-				Connection conn = Admin.getConnection("root", "root");
-				me = User.login(conn, userTextField.getText(), pwBox.getText());
-				if (me !=null){
-					Hovedmeny hm = new Hovedmeny();
-					hm.start(primaryStage);					
-				}
+				Login.me = new User(name1Box.getText(), name2Box.getText(), brukernavnBox.getText(), pwBox.getText(), false);
+				Login.me.save(Admin.getConnection("root", "root"));
+				Hovedmeny hm = new Hovedmeny();
+				hm.start(primaryStage);
 			}
 		});
 		
-		btnNewUser.setOnAction(new EventHandler<ActionEvent>() {
+		btn2.setOnAction(new EventHandler<ActionEvent>() {
 		    public void handle(ActionEvent e) {
-		    	me=null;
-		    	Nybruker nb = new Nybruker();
-		    	nb.start(primaryStage);
+		    	Login lg = new Login();
+				lg.start(primaryStage);
 		    }
 		});
 	}
