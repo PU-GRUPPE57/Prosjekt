@@ -43,7 +43,7 @@ public class Main extends Application{
 		System.out.println(user);
 		System.out.println(pass.equals(""));
 		
-		Connection conn = Admin.getConnection(user, pass);
+		Login.conn = Admin.getConnection(user, pass);
 		buf.close();
 		
 		Login lg = new Login();
