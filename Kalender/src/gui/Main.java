@@ -40,8 +40,6 @@ public class Main extends Application{
 		System.out.println("Enter Password");
 		String pass = buf.readLine();
 		
-		System.out.println(user);
-		System.out.println(pass.equals(""));
 		
 		Login.conn = Admin.getConnection(user, pass);
 		buf.close();

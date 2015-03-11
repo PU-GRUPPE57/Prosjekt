@@ -52,7 +52,7 @@ public class Event {
 
 	public void save(Connection conn){
 		id = generateID(conn);
-		String addEventSql = "INSERT INTO AVTALE VALUES " + "(" + id + ",'"  + rom.getId() + "','" + name + "','" + start + "','" + end + "','" + description + "','" + priority + "','" + owner.getId() + "')";
+		String addEventSql = "INSERT INTO AVTALE VALUES " + "(" + id + ",'" + name + "','" + start + "','" + end + "','" + description + "','" + priority + "','" + owner.getId() + "')";
 		try {
 			Statement stmt = conn.createStatement();
 			stmt.executeUpdate(addEventSql);
@@ -177,7 +177,7 @@ public static Event getEvent(Connection conn , int id){
 	public Room getRom() {
 		return rom;
 	}
-	
+	//TODO test
 	public void changeTime(Connection conn, User u, Timestamp start, Timestamp slutt){
 		if (u == owner){
 			this.start = start;

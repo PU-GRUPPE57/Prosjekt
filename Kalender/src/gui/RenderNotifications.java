@@ -47,7 +47,7 @@ public class RenderNotifications extends Application{
 		table.setItems(notifications);
 		table.getColumns().add(col1);
 		
-		VBox vbox = new VBox();
+		VBox vbox = new VBox(20);
         vbox.setSpacing(5);
         vbox.setPadding(new Insets(10, 0, 0, 10));
         vbox.getChildren().addAll(label, table);
