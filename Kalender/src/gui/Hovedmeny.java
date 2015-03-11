@@ -74,20 +74,15 @@ public class Hovedmeny extends Application{
 			}
 		});
 		
+		btn3.setOnAction(new EventHandler<ActionEvent>() {
+			public void handle(ActionEvent e){
+				RenderGroups rg = new RenderGroups();
+				rg.start(primaryStage);
+			}
+		});
+		
 		
 		primaryStage.show();
-		//		btnLogin.setOnAction(new EventHandler<ActionEvent>() {
-		//			public void handle(ActionEvent e){
-		//				Connection conn = Admin.getConnection("root", "root");
-		//		    	boolean log = User.login(conn, userTextField.getText(), pwBox.getText());
-		//		    	System.out.println(log);
-		//			}
-		//		});
-		//		
-		//		btnNewUser.setOnAction(new EventHandler<ActionEvent>() {
-		//		    public void handle(ActionEvent e) {
-		//		    	
-		//		    }
-		//		});
+
 	}
 }

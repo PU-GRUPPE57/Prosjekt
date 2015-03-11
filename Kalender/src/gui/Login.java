@@ -63,7 +63,6 @@ public class Login extends Application{
 		
 		btnLogin.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent e){
-				Connection conn = Admin.getConnection("root", "root");
 				me = User.login(conn, userTextField.getText(), pwBox.getText());
 				if (me !=null){
 					Hovedmeny hm = new Hovedmeny();
