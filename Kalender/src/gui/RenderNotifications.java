@@ -28,14 +28,12 @@ public class RenderNotifications extends Application{
 
 	private ObservableList<Varsel> notifications = FXCollections.observableArrayList();
 	private TableView<Varsel> table = new TableView();
-	private Connection conn = Admin.getConnection("root", "root");
-	private User u = User.getUser(conn, 1);
 	public RenderNotifications() {
 	}
 	
 	@Override
 	public void start(final Stage primaryStage) {
-		notifications.addAll(u.getNotifications(conn));
+		notifications.addAll(Login.me.getNotifications(Login.conn));
 		
 		Scene scene = new Scene(new Group());
 		

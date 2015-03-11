@@ -8,9 +8,12 @@ import notification.Varsel;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -25,14 +28,12 @@ public class RenderGroups extends Application{
 
 	private ObservableList<users.Group> groups = FXCollections.observableArrayList();
 	private TableView<users.Group> table = new TableView();
-	private Connection conn = Admin.getConnection("root", "");
-	private User u = User.getUser(conn, 3);
 	public RenderGroups() {
 	}
 	
 	@Override
-	public void start(Stage primaryStage) {
-		groups.addAll(u.getGroups(conn));
+	public void start(final Stage primaryStage) {
+		groups.addAll(Login.me.getGroups(Login.conn));
 		
 		Scene scene = new Scene(new Group());
 		
@@ -53,6 +54,17 @@ public class RenderGroups extends Application{
  
         ((Group) scene.getRoot()).getChildren().addAll(vbox);
  
+        Button btn1 = new Button("Tilbake");
+       	vbox.getChildren().add(btn1);
+        
+    	btn1.setOnAction(new EventHandler<ActionEvent>() {
+			public void handle(ActionEvent e){
+				Hovedmeny hm = new Hovedmeny();
+				hm.start(primaryStage);
+			}
+		});
+        
+        
         primaryStage.setScene(scene);
         primaryStage.show();
 	}
