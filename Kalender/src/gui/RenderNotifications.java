@@ -26,9 +26,8 @@ public class RenderNotifications extends Application{
 	private ObservableList<Varsel> notifications = FXCollections.observableArrayList();
 	private TableView<Varsel> table = new TableView();
 	private Connection conn = Admin.getConnection("root", "");
-	private User u;
-	public RenderNotifications(User u) {
-		this.u = u;
+	private User u = User.getUser(conn, 1);
+	public RenderNotifications() {
 	}
 	
 	@Override
