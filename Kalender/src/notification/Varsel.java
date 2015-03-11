@@ -14,7 +14,7 @@ import users.Connectable;
 import users.Group;
 import users.User;
 
-public class Varsel extends Connectable{
+public class Varsel{
 
 	private int id, type;
 	private Event event;

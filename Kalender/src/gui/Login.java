@@ -25,6 +25,7 @@ import javafx.stage.Stage;
 public class Login extends Application{
 	
 	public static User me = null;
+	public static Connection conn = null;
 
 	public void start(final Stage primaryStage){
 		primaryStage.setTitle("Kalender - Log inn");
