@@ -275,6 +275,26 @@ public class User {
 		}
 	}
 	
+	//Henter alle grupper brukeren er med i:
+		public List<Group> getGroups(Connection conn){
+			List<Group> l = new ArrayList<Group>();
+			String sql = "SELECT GRUPPE.GRUPPEID FROM GRUPPE, BRUKERIGRUPPE WHERE GRUPPE.GRUPPEID=BRUKERIGRUPPE.GRUPPEID AND BRUKERIGRUPPE.BRUKERID =" + this.id;
+			
+			try {
+				Statement stmt = conn.createStatement();
+				ResultSet rs = stmt.executeQuery(sql);
+				while(rs.next()){
+					l.add(Group.getGroup(conn, rs.getInt("GRUPPE.GRUPPEID")));
+				}
+				stmt.close();
+				return l;
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			//TODO
+			throw new IllegalStateException("Noe gikk feil ved henting av brukere");
+		}
+	
 	public String getUsername() {
 		return username;
 	}

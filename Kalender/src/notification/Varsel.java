@@ -123,10 +123,8 @@ public class Varsel {
 		switch (e){
 		case USER_INVITE_EVENT: text = "Du har blitt invitert til en avtale: " + event.getName() + " av: " + event.getOwner().getUsername();
 		break;
-		//TODO
-		case EVENT_ENDRET: text = "Eventet: " + event.getName() + " har blitt endret";
+		case EVENT_ENDRET: text = "Eventet: " + event.getName() + " har blitt endret, nytt starttidspunkt " + event.getStart() + " nytt sluttpunkt " + event.getEnd() ;
 		break;
-		//TODO
 		case ROM_RESERVERT: text = "Rommet: " + event.getRom().getName() + " har blitt reservert for: " + event.getName();
 		break;
 		}

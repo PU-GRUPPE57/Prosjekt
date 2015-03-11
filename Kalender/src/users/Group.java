@@ -7,6 +7,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import javafx.beans.property.SimpleStringProperty;
 import event.Event;
 import notification.Varsel;
 import notification.Varsel.EventMessages;
@@ -147,6 +148,10 @@ public class Group {
 	public int getId() {
 		if (id == -1) throw new IllegalStateException("Group id not set");
 		return id;
+	}
+	
+	public SimpleStringProperty textProperty() {
+		return new SimpleStringProperty(name);
 	}
 	
 

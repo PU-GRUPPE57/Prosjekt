@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import notification.Varsel;
+import notification.Varsel.EventMessages;
 import notification.Varsel.UserMessages;
 import users.Admin;
 import users.User;
@@ -175,5 +176,23 @@ public static Event getEvent(Connection conn , int id){
 	}
 	public Room getRom() {
 		return rom;
+	}
+	
+	public void changeTime(Connection conn, User u, Timestamp start, Timestamp slutt){
+		if (u == owner){
+			this.start = start;
+			this.end = slutt;
+			List<User> participants = getUsers(conn);
+			for (User user : participants) {
+				Varsel v = new Varsel(user, EventMessages.EVENT_ENDRET, this);
+				v.save(conn);
+			}
+		}
+	}
+	public Timestamp getStart() {
+		return start;
+	}
+	public Timestamp getEnd() {
+		return end;
 	}
 }
