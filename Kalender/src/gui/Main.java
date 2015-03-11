@@ -1,4 +1,6 @@
 package gui;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.util.Scanner;
 
@@ -31,6 +33,19 @@ public class Main extends Application{
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
+		BufferedReader buf = new BufferedReader(new InputStreamReader(System.in));
+		System.out.println("Connect to database:");
+		System.out.println("Enter Username");
+		String user = buf.readLine();
+		System.out.println("Enter Password");
+		String pass = buf.readLine();
+		
+		System.out.println(user);
+		System.out.println(pass.equals(""));
+		
+		Connection conn = Admin.getConnection(user, pass);
+		buf.close();
+		
 		Login lg = new Login();
 		lg.start(primaryStage);
 		

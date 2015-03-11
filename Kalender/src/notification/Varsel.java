@@ -10,10 +10,11 @@ import javafx.beans.property.Property;
 import javafx.beans.property.SimpleStringProperty;
 import event.Event;
 import event.Room;
+import users.Connectable;
 import users.Group;
 import users.User;
 
-public class Varsel {
+public class Varsel extends Connectable{
 
 	private int id, type;
 	private Event event;
