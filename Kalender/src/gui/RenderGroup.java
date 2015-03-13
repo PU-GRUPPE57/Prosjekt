@@ -1,4 +1,6 @@
 package gui;
+import java.time.LocalDate;
+
 import users.Group;
 import users.User;
 import users.UserEventModel;
@@ -33,6 +35,10 @@ public class RenderGroup extends Application{
 	private TableView<User> table = new TableView<User>();
 	private User selected;
 	
+	public RenderGroup(users.Group g){
+		super();
+		this.g = g;
+	}
 	
 	public void start(final Stage primaryStage){
 		primaryStage.setTitle("Kalender - Gruppe - " + g.getName() + " - " + Login.me.getName());
@@ -103,8 +109,7 @@ public class RenderGroup extends Application{
 
 		btn2.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent e){
-				InviteUsers i = new InviteUsers();
-				i.init(g);
+				InviteUsers i = new InviteUsers(g);
 				i.start(primaryStage);
 			}
 		});
@@ -112,37 +117,31 @@ public class RenderGroup extends Application{
 
 		btn3.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent e){
-				CreateEvent c = new CreateEvent();
-				c.init(g);
+				CreateEvent c = new CreateEvent(g);
 				c.start(primaryStage);
 			}
 		});
 		btn4.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent e){
-				Hovedmeny hm = new Hovedmeny();
+				Hovedmeny hm = new Hovedmeny(LocalDate.now());
 				hm.start(primaryStage);
 			}
 		});
 		btn5.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent e){
 				g.deleteGroup(Login.conn);
-				Hovedmeny hm = new Hovedmeny();
+				Hovedmeny hm = new Hovedmeny(LocalDate.now());hm.start(primaryStage);
 				hm.start(primaryStage);
 			}
 		});
 		btn6.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent e){
 				selected.removeGroup(Login.conn, g, Login.me);
-				RenderGroup re = new RenderGroup();
-				re.init(g);
+				RenderGroup re = new RenderGroup(g);
 				re.start(primaryStage);
 			}
 		});
 		primaryStage.show();
-	}
-
-	public void init(users.Group g) {
-		this.g = g;
 	}
 	
 	private class OnClick implements EventHandler<MouseEvent>{

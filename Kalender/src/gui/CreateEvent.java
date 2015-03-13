@@ -2,6 +2,7 @@ package gui;
 
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
 
 import event.Event;
 import users.User;
@@ -26,8 +27,9 @@ public class CreateEvent extends Application{
 
 	users.Group g;
 
-	public CreateEvent(){
-		g = null;
+	public CreateEvent(users.Group g){
+		super();
+		this.g = g;
 	}
 
 	public void start(final Stage primaryStage){
@@ -65,10 +67,28 @@ public class CreateEvent extends Application{
 		grid.add(beskrivelse, 0, 3);
 		final TextField beskBox = new TextField();
 		grid.add(beskBox, 1, 3);
-		Label pw = new Label("Tidspunkt TODO");
-		grid.add(pw, 0, 4);
-		final PasswordField pwBox = new PasswordField();
-		grid.add(pwBox, 1, 4);
+		Label date = new Label("DD MM YYYY");
+		Label time = new Label ("HH MM");
+
+		GridPane dateField = new GridPane();
+		final TextField day = new TextField();
+		final TextField month= new TextField();
+		final TextField year = new TextField();
+		dateField.add(day, 0, 0);
+		dateField.add(month, 1, 0);
+		dateField.add(year, 2, 0);
+		
+		GridPane timeField = new GridPane();
+		final TextField hours = new TextField();
+		final TextField minutes= new TextField();
+		timeField.add(hours, 0, 0);
+		timeField.add(minutes, 1, 0);
+		
+		
+		grid.add(date, 0, 4);
+		grid.add(dateField, 1, 4);
+		grid.add(time, 0, 5);
+		grid.add(timeField, 1, 5);
 
 
 		primaryStage.show();
@@ -84,21 +104,16 @@ public class CreateEvent extends Application{
 					}					
 				}
 				ev.replyToInvitation(Login.conn, Login.me, 1);
-				RenderEvent r = new RenderEvent();
-				r.init(ev);
+				RenderEvent r = new RenderEvent(ev);
 				r.start(primaryStage);
 			}
 		});
 
 		btn2.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent e) {
-				Hovedmeny hm = new Hovedmeny();
+				Hovedmeny hm = new Hovedmeny(LocalDate.now());
 				hm.start(primaryStage);
 			}
 		});
-	}
-
-	public void init(users.Group g){
-		this.g = g;
 	}
 }

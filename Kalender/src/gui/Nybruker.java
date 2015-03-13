@@ -1,5 +1,6 @@
 package gui;
 import java.sql.Connection;
+import java.time.LocalDate;
 import java.util.Scanner;
 
 import users.Admin;
@@ -73,7 +74,7 @@ public class Nybruker extends Application{
 			public void handle(ActionEvent e){
 				Login.me = new User(name1Box.getText(), name2Box.getText(), brukernavnBox.getText(), pwBox.getText(), false);
 				Login.me.save(Login.conn);
-				Hovedmeny hm = new Hovedmeny();
+				Hovedmeny hm = new Hovedmeny(LocalDate.now());
 				hm.start(primaryStage);
 			}
 		});

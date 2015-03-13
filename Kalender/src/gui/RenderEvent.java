@@ -1,4 +1,6 @@
 package gui;
+import java.time.LocalDate;
+
 import event.Event;
 import users.User;
 import users.UserEventModel;
@@ -32,6 +34,11 @@ public class RenderEvent extends Application{
 	private ObservableList<UserEventModel> users = FXCollections.observableArrayList();
 	private TableView<UserEventModel> table = new TableView<UserEventModel>();
 	private User selected;
+	
+	public RenderEvent(Event e){
+		super();
+		this.event = e;
+	}
 	
 	public void start(final Stage primaryStage){
 		primaryStage.setTitle("Kalender - Gruppe - "  + " - " + Login.me.getName());
@@ -107,8 +114,7 @@ public class RenderEvent extends Application{
 
 		btn1.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent e){
-				InviteUsers i = new InviteUsers();
-				i.init(event);
+				InviteUsers i = new InviteUsers(event);
 				i.start(primaryStage);
 			}
 		});
@@ -121,7 +127,7 @@ public class RenderEvent extends Application{
 		});
 		btn2.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent e){
-				Hovedmeny hm = new Hovedmeny();
+				Hovedmeny hm = new Hovedmeny(LocalDate.now());
 				hm.start(primaryStage);
 			}
 		});
@@ -129,39 +135,32 @@ public class RenderEvent extends Application{
 			public void handle(ActionEvent e){
 				
 				event.replyToInvitation(Login.conn, Login.me, 1);
-				RenderEvent re = new RenderEvent();
-				re.init(event);
+				RenderEvent re = new RenderEvent(event);
 				re.start(primaryStage);
 			}
 		});
 		btn5.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent e){
 				event.replyToInvitation(Login.conn, Login.me, 2);
-				RenderEvent re = new RenderEvent();
-				re.init(event);
+				RenderEvent re = new RenderEvent(event);
 				re.start(primaryStage);
 			}
 		});
 		btn6.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent e){
 				event.deleteEvent(Login.conn);
-				Hovedmeny hm = new Hovedmeny();
+				Hovedmeny hm = new Hovedmeny(LocalDate.now());
 				hm.start(primaryStage);
 			}
 		});
 		btn7.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent e){
 				selected.removeEvent(Login.conn, event, Login.me);
-				RenderEvent re = new RenderEvent();
-				re.init(event);
+				RenderEvent re = new RenderEvent(event);
 				re.start(primaryStage);
 			}
 		});
 		primaryStage.show();
-	}
-
-	public void init(Event e) {
-		this.event = e;
 	}
 	
 	private class OnClick implements EventHandler<MouseEvent>{

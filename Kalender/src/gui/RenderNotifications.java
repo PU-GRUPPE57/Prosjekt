@@ -1,5 +1,7 @@
 package gui;
 
+import java.time.LocalDate;
+
 import notification.Varsel;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
@@ -92,15 +94,14 @@ public class RenderNotifications extends Application{
         
 		btn1.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent e){
-				Hovedmeny hm = new Hovedmeny();
+				Hovedmeny hm = new Hovedmeny(LocalDate.now());
 				hm.start(primaryStage);
 			}
 		});
 		btn2.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent e){
 				Login.me.removeVarsel(Login.conn, selected);
-				RenderGroup rg = new RenderGroup();
-				rg.init(selected.getGroup());
+				RenderGroup rg = new RenderGroup(selected.getGroup());
 				rg.start(primaryStage);
 				}
 		});
@@ -108,8 +109,7 @@ public class RenderNotifications extends Application{
 			public void handle(ActionEvent e){
 
 			Login.me.removeVarsel(Login.conn, selected);
-			RenderEvent re = new RenderEvent();
-			re.init(selected.getEvent());
+			RenderEvent re = new RenderEvent(selected.getEvent());
 			re.start(primaryStage);
 			}
 		});

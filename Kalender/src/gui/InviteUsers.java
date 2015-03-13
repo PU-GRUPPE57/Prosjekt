@@ -1,6 +1,7 @@
 package gui;
 
 import java.sql.Connection;
+import java.time.LocalDate;
 
 import event.Event;
 import users.Admin;
@@ -29,6 +30,15 @@ import javafx.util.Callback;
 
 public class InviteUsers extends Application{
 
+	
+	public InviteUsers(users.Group g){
+		super();
+		this.g=g;
+	}
+	public InviteUsers(Event e){
+		super();
+		this.event = e;
+	}
 
 	private ObservableList<User> users = FXCollections.observableArrayList();
 	private TableView<User> table = new TableView();
@@ -95,7 +105,7 @@ public class InviteUsers extends Application{
        	
     	btn1.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent e){
-				Hovedmeny hm = new Hovedmeny();
+				Hovedmeny hm = new Hovedmeny(LocalDate.now());
 				hm.start(primaryStage);
 			}
 		});
@@ -105,12 +115,10 @@ public class InviteUsers extends Application{
 				InviteUsers i;
 				if (g == null){
 					selected.addEvent(Login.conn, event);
-					i = new InviteUsers();
-					i.init(event);
+					i = new InviteUsers(event);
 				}else{
 					selected.addToGroup(Login.conn, g);
-					i = new InviteUsers();
-					i.init(g);
+					i = new InviteUsers(g);
 				}
 				i.start(primaryStage);					
 			}
@@ -119,13 +127,11 @@ public class InviteUsers extends Application{
     	btn3.setOnAction(new EventHandler<ActionEvent>() {
     		public void handle(ActionEvent e){
     			if (g == null){
-    				RenderEvent cg = new RenderEvent();
-        			cg.init(event);
+    				RenderEvent cg = new RenderEvent(event);
         			cg.start(primaryStage);
         				
     			}else{
-    				RenderGroup cg = new RenderGroup();
-    				cg.init(g);
+    				RenderGroup cg = new RenderGroup(g);
     				cg.start(primaryStage);    				
     			}
     			
@@ -164,12 +170,5 @@ public class InviteUsers extends Application{
 	
 	public User getSelected() {
 		return selected;
-	}
-	
-	public void init(users.Group g){
-		this.g = g;
-	}
-	public void init(Event e){
-		this.event = e;
 	}
 }

@@ -1,5 +1,6 @@
 package gui;
 import java.util.Calendar;
+
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -13,6 +14,8 @@ import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.RowConstraints;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 
 import java.sql.Date;
@@ -21,11 +24,19 @@ import java.time.LocalDate;
 
 public class Hovedmeny extends Application{
 
+	private LocalDate time;
+	
+	public Hovedmeny(LocalDate date){
+		super();
+		this.time = date;
+	}
+	
 	public void start(final Stage primaryStage){
 		primaryStage.setTitle("Kalender - Hovedmeny - " + Login.me.getName());
 		BorderPane root = new BorderPane();
 		Scene scene = new Scene(root, 1000, 750);
 		primaryStage.setScene(scene);
+		LocalDate now = LocalDate.now();
 		initCalender(root);
 		initButtons(root, primaryStage);
 		primaryStage.show();
@@ -46,7 +57,7 @@ public class Hovedmeny extends Application{
 			row.setPercentHeight(100/7);
 			calendar.getRowConstraints().add(row);
 		}
-		Calendar cal = getStartDateOfCalendar(2015, 3);
+		Calendar cal = getStartDateOfCalendar(time.getYear(), time.getMonthValue());
 		for (int r = 0; r < 7; ++r) {
 			for (int c = 0; c < 8; ++c) {
 				Pane date = new Pane();
@@ -110,15 +121,27 @@ public class Hovedmeny extends Application{
 		grid.setHgap(10);
 		grid.setVgap(10);
 		grid.setPadding(new Insets(25, 25, 25, 25));
-
+		
+		
+		Label title = new Label(time.getMonth().name());
+		Label title2 = new Label(String.valueOf(time.getYear()));
+		title.setFont(Font.font("Verdana", FontWeight.BOLD, 20));
+		title2.setFont(Font.font("Verdana", FontWeight.BOLD, 15));
+		grid.add(title, 3, 0);
+		grid.add(title2, 3, 1);
+		
 		Button btn1 = new Button("Varsel");
-		grid.add(btn1, 1,0);
+		grid.add(btn1, 1,2);
 		Button btn2 = new Button("Grupper");
-		grid.add(btn2, 2, 0);
+		grid.add(btn2, 2, 2);
 		Button btn3 = new Button("Opprett Event");
-		grid.add(btn3, 3 , 0);
+		grid.add(btn3, 3 , 2);
 		Button btn4 = new Button("Logg ut");
-		grid.add(btn4, 4, 0);
+		grid.add(btn4, 4, 2);
+		Button btn5 = new Button("<--");
+		grid.add(btn5, 0, 2);
+		Button btn6 = new Button("-->");
+		grid.add(btn6, 5, 2);
 		//			Button btn6 = new Button("");
 		//			hbBtn.getChildren().add(btn6);
 		//			Button btn7 = new Button("");
@@ -146,7 +169,7 @@ public class Hovedmeny extends Application{
 		
 		btn3.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent e){
-				CreateEvent c = new CreateEvent();
+				CreateEvent c = new CreateEvent(null);
 				c.start(primaryStage);
 			}
 		});
@@ -158,6 +181,18 @@ public class Hovedmeny extends Application{
 				Login.me = null;
 				Login l = new Login();
 				l.start(primaryStage);
+			}
+		});
+		btn5.setOnAction(new EventHandler<ActionEvent>() {
+			public void handle(ActionEvent e){
+				Hovedmeny hm = new Hovedmeny(time.minusMonths(1));
+				hm.start(primaryStage);
+			}
+		});
+		btn6.setOnAction(new EventHandler<ActionEvent>() {
+			public void handle(ActionEvent e){
+				Hovedmeny hm = new Hovedmeny(time.plusMonths(1));
+				hm.start(primaryStage);
 			}
 		});
 

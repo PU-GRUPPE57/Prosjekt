@@ -1,6 +1,7 @@
 package gui;
 
 import java.sql.Connection;
+import java.time.LocalDate;
 
 import users.Admin;
 import users.User;
@@ -91,15 +92,14 @@ public class RenderGroups extends Application{
        	
     	btn1.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent e){
-				Hovedmeny hm = new Hovedmeny();
+				Hovedmeny hm = new Hovedmeny(LocalDate.now());
 				hm.start(primaryStage);
 			}
 		});
 
     	btn2.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent e){
-				RenderGroup rg = new RenderGroup();
-				rg.init(selected);
+				RenderGroup rg = new RenderGroup(selected);
 				rg.start(primaryStage);
 			}
 		});

@@ -1,6 +1,8 @@
 package gui;
 import java.sql.Connection;
+import java.time.LocalDate;
 import java.util.Scanner;
+
 import users.Admin;
 import users.User;
 import javafx.application.Application;
@@ -65,7 +67,7 @@ public class Login extends Application{
 			public void handle(ActionEvent e){
 				me = User.login(conn, userTextField.getText(), pwBox.getText());
 				if (me !=null){
-					Hovedmeny hm = new Hovedmeny();
+					Hovedmeny hm = new Hovedmeny(LocalDate.now());
 					hm.start(primaryStage);					
 				}
 			}

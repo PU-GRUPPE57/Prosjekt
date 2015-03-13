@@ -1,5 +1,6 @@
 package gui;
 import java.sql.Connection;
+import java.time.LocalDate;
 import java.util.Scanner;
 
 import users.Admin;
@@ -61,16 +62,15 @@ public class CreateGroup extends Application{
 				users.Group g = new users.Group(name1Box.getText(), Login.me);
 				g.save(Login.conn);
 				
-				InviteUsers i = new InviteUsers();
-				i.init(g);
+				InviteUsers i = new InviteUsers(g);
 				i.start(primaryStage);
 			}
 		});
 
 		btn2.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent e) {
-				Hovedmeny lg = new Hovedmeny();
-				lg.start(primaryStage);
+				Hovedmeny hm = new Hovedmeny(LocalDate.now());
+				hm.start(primaryStage);
 			}
 		});
 	}
