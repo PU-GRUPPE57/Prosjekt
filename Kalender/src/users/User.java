@@ -4,6 +4,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import javafx.beans.property.SimpleStringProperty;
 import users.Group;
 import event.Event;
 import notification.Varsel;
@@ -139,6 +140,43 @@ public class User {
 		throw new IllegalStateException("failed to get user by username: " + username);
 	}
 
+	//henter alle som ikke er invitert fra før:
+	public static List<User> getInviteList(Connection conn, Group g){
+		List<User> l = getUsers(conn);
+		List<User> l2 = g.getUsers(conn);
+		int i = 0;
+		while (i < l.size()){
+			for (int j = 0; j < l2.size(); j++) {
+				if (l.get(i).getId() == l2.get(j).getId()){
+					l.remove(l.get(i));
+					i--;
+					break;
+				}
+			}
+			i++;
+		}
+		return l;
+	}
+	
+	
+	//henter alle bruker:
+	public static List<User> getUsers(Connection conn){
+		List<User> l = new ArrayList<User>();
+		try {
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM BRUKER");
+			while(rs.next()){
+				l.add(new User(rs.getInt("BrukerID"), rs.getString("Fornavn"), rs.getString("Etternavn"), rs.getString("Brukernavn"), rs.getString("passord"), rs.getInt("isAdmin") == 1));				
+			}
+			stmt.close();
+			return l;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		throw new IllegalStateException("failed to get user by users");
+
+	}
+	
 	//Test for restriksjoner i brukernavn, og navn //TODO passord
 	private boolean isValidUser(String firstname,String lastname, String username, String password){
 		if (!(firstname.matches("[a-åA-Å]+"))){
@@ -302,6 +340,10 @@ public class User {
 	}
 	public boolean getAdmin() {
 		return admin == 1;
+	}
+	
+	public SimpleStringProperty usernameProperty(){
+		return new SimpleStringProperty(username);
 	}
 
 }

@@ -1,0 +1,152 @@
+package gui;
+
+import java.sql.Connection;
+
+import users.Admin;
+import users.User;
+import notification.Varsel;
+import javafx.application.Application;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Group;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+import javafx.util.Callback;
+
+public class InviteUsers extends Application{
+
+
+	private ObservableList<User> users = FXCollections.observableArrayList();
+	private TableView<User> table = new TableView();
+	
+	private users.User selected;
+	private users.Group g;
+	
+	@Override
+	public void start(final Stage primaryStage) {
+		users.addAll(User.getInviteList(Login.conn, g));
+		if (users.size() != 0) selected = users.get(0);
+		
+		
+		GridPane grid = new GridPane();
+		grid.setAlignment(Pos.TOP_LEFT);
+		grid.setHgap(10);
+		grid.setVgap(10);
+		grid.setPadding(new Insets(25, 25, 25, 25));		
+		
+		Scene scene = new Scene(new Group());
+		
+		Label label = new Label("Velg hvem du vil invitere:");
+		
+		table.setEditable(true);
+		
+		Callback<TableColumn<User, String>, TableCell<User, String>> stringCellFactory =
+				new Callback<TableColumn<User, String>, TableCell<User, String>>() {
+			@Override
+			public TableCell call(TableColumn p) {
+				MyStringTableCell cell = new MyStringTableCell();
+				cell.addEventFilter(MouseEvent.MOUSE_CLICKED, new OnClick());
+				return cell;
+			}
+		};
+		
+		TableColumn<User, String> col1 = new TableColumn<User, String>("Brukernavn");
+		col1.setCellValueFactory(new PropertyValueFactory<User,String>("username"));
+		col1.setCellFactory(stringCellFactory);
+		
+		table.setItems(users);
+		table.getColumns().add(col1);
+		
+ 
+        Button btn1 = new Button("Tilbake");
+		Button btn2 = new Button("Inviter bruker");
+       	Button btn3 = new Button("Videre");
+       	grid.add(btn1, 0, 0);
+       	grid.add(btn2, 2, 0);
+       	grid.add(btn3, 4, 0);
+       	
+       	
+       	VBox vbox = new VBox();
+       	vbox.setSpacing(5);
+       	vbox.setPadding(new Insets(10, 0, 0, 10));
+       	vbox.getChildren().add(grid);
+       	vbox.getChildren().addAll(label, table);
+       	
+       	((Group) scene.getRoot()).getChildren().addAll(vbox);
+       	
+    	btn1.setOnAction(new EventHandler<ActionEvent>() {
+			public void handle(ActionEvent e){
+				Hovedmeny hm = new Hovedmeny();
+				hm.start(primaryStage);
+			}
+		});
+
+    	btn2.setOnAction(new EventHandler<ActionEvent>() {
+			public void handle(ActionEvent e){
+				selected.addToGroup(Login.conn, g);
+				InviteUsers i = new InviteUsers();
+				i.init(g);
+				i.start(primaryStage);
+			}
+		});
+    	
+    	btn3.setOnAction(new EventHandler<ActionEvent>() {
+    		public void handle(ActionEvent e){
+    			RenderGroup cg = new RenderGroup();
+    			cg.init(g);
+    			cg.start(primaryStage);
+    			
+    		}
+    	});
+        
+    	
+        
+        primaryStage.setScene(scene);
+        primaryStage.show();
+	}
+	
+	private class OnClick implements EventHandler<MouseEvent>{
+
+		@Override
+		public void handle(MouseEvent click) {
+			TableCell t  = (TableCell) click.getSource();
+			selected =  users.get(t.getIndex());
+			
+			
+		}
+	}
+	class MyStringTableCell extends TableCell<Group, String> {
+		 
+        @Override
+        public void updateItem(String item, boolean empty) {
+            super.updateItem(item, empty);
+            setText(empty ? null : getString());
+            setGraphic(null);
+        }
+ 
+        private String getString() {
+            return getItem() == null ? "" : getItem().toString();
+        }
+    }
+	
+	public User getSelected() {
+		return selected;
+	}
+	
+	public void init(users.Group g){
+		this.g = g;
+	}
+}
