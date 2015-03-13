@@ -22,7 +22,7 @@ public class Event {
 	private Room rom;
 	private User owner;
 	private Timestamp start, end;
-	
+
 
 	public Event(String name, int priority, Room rom, User owner, Timestamp start, Timestamp slutt, String description){
 		if (!name.matches("[a-ÂA-≈0-9]+")){
@@ -37,7 +37,7 @@ public class Event {
 		this.end = slutt;
 		this.description= description;
 	}
-	
+
 	//Brukes kun til Â hente event ved id:
 	private Event(int id,Room rom, String name, Timestamp t, Timestamp t2 , int priority, User owner, String description){
 		this.id =id;
@@ -58,13 +58,13 @@ public class Event {
 			stmt.executeUpdate(addEventSql);
 			stmt.close();
 			addUser(conn,owner);
-			rom.romRes(conn, this);
-			
+			//			rom.romRes(conn, this);
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public void replyToInvitation(Connection conn,User u, int reply){
 		if (reply<1 || reply>2) throw new IllegalArgumentException("Invalid reply to invitation");
 		String sql = "UPDATE BRUKERIAVTALE SET STATUS= " + reply + " WHERE AVTALEID= " + id +" AND BRUKERID= " + u.getId();
@@ -72,24 +72,26 @@ public class Event {
 			Statement stmt = conn.createStatement();
 			stmt.executeUpdate(sql);
 			stmt.close();
-			Varsel v = new Varsel(owner, reply==1 ? UserMessages.EVENT_ACCEPTED : UserMessages.EVENT_DECLINED, u , this);
-			v.save(conn);
+			if (!(owner.getId()==u.getId())){
+				Varsel v = new Varsel(owner, reply==1 ? UserMessages.EVENT_ACCEPTED : UserMessages.EVENT_DECLINED, u , this);
+				v.save(conn);				
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	//legger til bruker i eventet:
 	public void addUser(Connection conn, User u){
 		u.addEvent(conn, this);
 	}
-	
+
 	//returnerer et map over brukere som er med, og hvilken tilstand de har (ikke svart (0) , takket ja (1), takket nei (2))
 	//TODO test
 	public HashMap<User, Integer> checkInviteStatus(Connection conn){
 		HashMap<User, Integer> m = new HashMap<User, Integer>();
 		String sql = "SELECT BRUKER.BRUKERID, BRUKERIAVTALE.STATUS FROM BRUKER, BRUKERIAVTALE WHERE BRUKER.BRUKERID=BRUKERIAVTALE.BRUKERID AND BRUKERIAVTALE.AVTALEID =" + this.id;
-		
+
 		try {
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(sql);
@@ -120,7 +122,7 @@ public class Event {
 		}
 		throw new IllegalStateException("ID-generation failed");
 	}
-	
+
 	//Returnerer liste over alle inviterte:
 	public List<User> getUsers(Connection conn){
 		List<User> l = new ArrayList<User>();
@@ -139,21 +141,21 @@ public class Event {
 		//TODO
 		throw new IllegalStateException("Noe gikk feil ved henting av inviterte brukere i event");
 	}
-	
-	
+
+
 	public int getId() {
 		if (id == -1) throw new IllegalStateException("invalid event id, call event.save() first");
 		return id;
 	}
-	
+
 	//henter event ved id:
-public static Event getEvent(Connection conn , int id){
+	public static Event getEvent(Connection conn , int id){
 		if (id == 0) return null;
 		try {
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM AVTALE WHERE AVTALEID = " + id);
 			rs.next();
-			Event u = new Event(id, Room.getRoom(conn, rs.getInt("Romid")), rs.getString("Name"), rs.getTimestamp("Start"), rs.getTimestamp("Slutt"), rs.getInt("Prioritet"), User.getUser(conn, rs.getInt("Brukerid")), rs.getString("Beskrivelse")); 
+			Event u = new Event(id, null, rs.getString("Name"), rs.getTimestamp("Start"), rs.getTimestamp("Slutt"), rs.getInt("Prioritet"), User.getUser(conn, rs.getInt("Brukerid")), rs.getString("Beskrivelse")); 
 			stmt.close();
 			return u;
 		} catch (SQLException e) {
@@ -162,15 +164,26 @@ public static Event getEvent(Connection conn , int id){
 		throw new IllegalStateException("failed to get event by id: " + id );
 	}
 
+	public void deleteEvent(Connection conn){
+		String deleteEventSql = "DELETE FROM AVTALE WHERE AVTALEID=" + id;
+		try {
+			Statement stmt = conn.createStatement();
+			stmt.executeUpdate(deleteEventSql);
+			stmt.close();			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
 	@Override
 	public String toString() {
 		return name + "ID: " + id;
 	}
-	
+
 	public String getName() {
 		return name;
 	}
-	
+
 	public User getOwner() {
 		return owner;
 	}

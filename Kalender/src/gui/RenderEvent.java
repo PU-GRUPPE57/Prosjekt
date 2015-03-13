@@ -1,5 +1,5 @@
 package gui;
-import users.Group;
+import event.Event;
 import users.User;
 import users.UserEventModel;
 import javafx.application.Application;
@@ -9,6 +9,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -26,23 +27,20 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 
 
-public class RenderGroup extends Application{
-
-	private users.Group g;
-	private ObservableList<User> users = FXCollections.observableArrayList();
-	private TableView<User> table = new TableView<User>();
+public class RenderEvent extends Application{
+	private Event event;
+	private ObservableList<UserEventModel> users = FXCollections.observableArrayList();
+	private TableView<UserEventModel> table = new TableView<UserEventModel>();
 	private User selected;
 	
-	
 	public void start(final Stage primaryStage){
-		primaryStage.setTitle("Kalender - Gruppe - " + g.getName() + " - " + Login.me.getName());
+		primaryStage.setTitle("Kalender - Gruppe - "  + " - " + Login.me.getName());
 
-		users.addAll(g.getUsers(Login.conn));
-		if(users.size() != 0) selected = users.get(0);
-
+		users.addAll(UserEventModel.getUserEventModels(Login.conn, event));
+		if (users.size()!=0) selected = users.get(0).getU();
 		Scene scene = new Scene(new javafx.scene.Group());
 
-		Label label = new Label("Brukere i gruppen");
+		Label label = new Label("Brukere status");
 
 		table.setEditable(true);
 
@@ -53,23 +51,28 @@ public class RenderGroup extends Application{
 		grid.setVgap(10);
 		grid.setPadding(new Insets(25, 25, 25, 25));
 
-		Button btn2 = new Button("Inviter Brukere");
-		Button btn3 = new Button("Opprett event");
-		Button btn4 = new Button("Til hovedmeny");
-		Button btn5 = new Button("Slett gruppe");
-		Button btn6 = new Button("Slett bruker");
+		Button btn1 = new Button("Inviter Brukere");
+		Button btn2 = new Button("Til hovedmeny");
+		Button btn3 = new Button("Reserver Rom");
+		Button btn4 = new Button("Jeg deltar");
+		Button btn5 = new Button("Jeg deltar ikke");
+		Button btn6 = new Button("Slett avtale");
+		Button btn7 = new Button("Slett bruker");
 		
 		//Sjekk for at kun admin kan legge til bruker og opprette event:
-		if (Login.me.getId() == g.getAdmin().getId()){
-			grid.add(btn2, 0, 2);
-			grid.add(btn3, 1, 2);
-			grid.add(btn5, 3 , 2);
-			grid.add(btn6, 4,2);
+		if (Login.me.getId() == event.getOwner().getId()){
+			grid.add(btn1, 1, 2);
+			grid.add(btn3, 2,2);
+			grid.add(btn6,1,4);
+			grid.add(btn7,3,4);
+			
 		}
-		grid.add(btn4, 2 , 2);
-
-		Callback<TableColumn<User, String>, TableCell<User, String>> stringCellFactory =
-				new Callback<TableColumn<User, String>, TableCell<User, String>>() {
+		grid.add(btn2, 0 , 2);
+		grid.add(btn4, 0 , 4);
+		grid.add(btn5, 2 , 4);
+		
+		Callback<TableColumn<UserEventModel, String>, TableCell<UserEventModel, String>> stringCellFactory =
+				new Callback<TableColumn<UserEventModel, String>, TableCell<UserEventModel, String>>() {
 			@Override
 			public TableCell call(TableColumn p) {
 				MyStringTableCell cell = new MyStringTableCell();
@@ -77,15 +80,16 @@ public class RenderGroup extends Application{
 				return cell;
 			}
 		};
-		
-		
-		TableColumn<User, String> col1 = new TableColumn<User, String>("Brukernavn");
-		col1.setCellValueFactory(new PropertyValueFactory<User,String>("username"));
+
+		TableColumn<UserEventModel, String> col1 = new TableColumn<UserEventModel, String>("Brukernavn");
+		col1.setCellValueFactory(new PropertyValueFactory<UserEventModel,String>("user"));
+		TableColumn<UserEventModel, String> col2 = new TableColumn<UserEventModel, String>("Status");
+		col2.setCellValueFactory(new PropertyValueFactory<UserEventModel,String>("status"));
 		col1.setCellFactory(stringCellFactory);
-		
-		
+
 		table.setItems(users);
 		table.getColumns().add(col1);
+		table.getColumns().add(col2);
 
 		VBox vbox = new VBox();
 		vbox.setSpacing(5);
@@ -97,14 +101,14 @@ public class RenderGroup extends Application{
 		
 		
 		primaryStage.setScene(scene);
-		Text scenetitle = new Text("Gruppe " + g.getName());
+		Text scenetitle = new Text("Event " + event.getName());
 		scenetitle.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
 		grid.add(scenetitle, 0, 0, 2, 1);
 
-		btn2.setOnAction(new EventHandler<ActionEvent>() {
+		btn1.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent e){
 				InviteUsers i = new InviteUsers();
-				i.init(g);
+				i.init(event);
 				i.start(primaryStage);
 			}
 		});
@@ -112,37 +116,52 @@ public class RenderGroup extends Application{
 
 		btn3.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent e){
-				CreateEvent c = new CreateEvent();
-				c.init(g);
-				c.start(primaryStage);
+				//TODO romres
+			}
+		});
+		btn2.setOnAction(new EventHandler<ActionEvent>() {
+			public void handle(ActionEvent e){
+				Hovedmeny hm = new Hovedmeny();
+				hm.start(primaryStage);
 			}
 		});
 		btn4.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent e){
-				Hovedmeny hm = new Hovedmeny();
-				hm.start(primaryStage);
+				
+				event.replyToInvitation(Login.conn, Login.me, 1);
+				RenderEvent re = new RenderEvent();
+				re.init(event);
+				re.start(primaryStage);
 			}
 		});
 		btn5.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent e){
-				g.deleteGroup(Login.conn);
-				Hovedmeny hm = new Hovedmeny();
-				hm.start(primaryStage);
+				event.replyToInvitation(Login.conn, Login.me, 2);
+				RenderEvent re = new RenderEvent();
+				re.init(event);
+				re.start(primaryStage);
 			}
 		});
 		btn6.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent e){
-				selected.removeGroup(Login.conn, g, Login.me);
-				RenderGroup re = new RenderGroup();
-				re.init(g);
+				event.deleteEvent(Login.conn);
+				Hovedmeny hm = new Hovedmeny();
+				hm.start(primaryStage);
+			}
+		});
+		btn7.setOnAction(new EventHandler<ActionEvent>() {
+			public void handle(ActionEvent e){
+				selected.removeEvent(Login.conn, event, Login.me);
+				RenderEvent re = new RenderEvent();
+				re.init(event);
 				re.start(primaryStage);
 			}
 		});
 		primaryStage.show();
 	}
 
-	public void init(users.Group g) {
-		this.g = g;
+	public void init(Event e) {
+		this.event = e;
 	}
 	
 	private class OnClick implements EventHandler<MouseEvent>{
@@ -150,7 +169,7 @@ public class RenderGroup extends Application{
 		@Override
 		public void handle(MouseEvent click) {
 			TableCell t  = (TableCell) click.getSource();
-			selected =  users.get(t.getIndex());
+			selected =  users.get(t.getIndex()).getU();
 			
 			
 		}

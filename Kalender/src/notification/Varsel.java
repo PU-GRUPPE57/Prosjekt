@@ -160,4 +160,17 @@ public class Varsel{
 	public SimpleStringProperty textProperty() {
 		return new SimpleStringProperty(text);
 	}
+	
+	public int getType() {
+		return type;
+	}
+	public Group getGroup() {
+		return group;
+	}
+	public Event getEvent() {
+		return event;
+	}
+	public int getId() {
+		return id;
+	}
 }

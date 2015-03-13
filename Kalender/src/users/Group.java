@@ -14,11 +14,11 @@ import notification.Varsel.EventMessages;
 import notification.Varsel.GroupMessages;
 
 public class Group {
-	
+
 	private int id;
 	private String name;
 	private User admin;
-	
+
 	public Group(String name, User admin){
 		this.id = -1;
 		this.name=name;
@@ -30,7 +30,7 @@ public class Group {
 		this.name= name;
 		this.admin=admin;
 	}
-	
+
 	//legger til bruker u:
 	public void addUser(Connection conn, User u){
 		if (id == -1) save(conn);
@@ -39,15 +39,15 @@ public class Group {
 			Statement stmt = conn.createStatement();
 			stmt.executeUpdate(addEventSql);
 			stmt.close();
-			Varsel v = new Varsel(u, GroupMessages.USER_ADDED, this);
-			v.save(conn);
-			
-			
+			if (!(admin.getId() == u.getId())){
+				Varsel v = new Varsel(u, GroupMessages.USER_ADDED, this);
+				v.save(conn);						
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	//fjerner bruker u:
 	public void removeUser(Connection conn, User u){
 		if (id == -1) save(conn);
@@ -63,6 +63,17 @@ public class Group {
 		}
 	}
 	
+	public void deleteGroup(Connection conn){
+		String deleteEventSql = "DELETE FROM GRUPPE WHERE GRUPPEID=" + id;
+		try {
+			Statement stmt = conn.createStatement();
+			stmt.executeUpdate(deleteEventSql);
+			stmt.close();			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
 	//lagrer:
 	public void save(Connection conn){
 		id = generateID(conn);
@@ -72,27 +83,17 @@ public class Group {
 			stmt.executeUpdate(addGroupSql);
 			stmt.close();
 			addUser(conn, admin);
-			
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
-	
-	
-	//Fjerner ev fra alle medlemmene i gruppa:
-	//TODO test
-	public void removeEvent(Connection conn, Event ev, User us){
-		List<User> users = ev.getUsers(conn);
-		for (User u : users){
-			u.removeEvent(conn, ev, us);
-		}
-	}
-	
+
 	//Henter alle brukere som er med i gruppen:
 	public List<User> getUsers(Connection conn){
 		List<User> l = new ArrayList<User>();
 		String sql = "SELECT BRUKER.BRUKERID FROM BRUKER, BRUKERIGRUPPE WHERE BRUKER.BRUKERID=BRUKERIGRUPPE.BRUKERID AND BRUKERIGRUPPE.GRUPPEID =" + this.id;
-		
+
 		try {
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(sql);
@@ -122,7 +123,7 @@ public class Group {
 		}
 		throw new IllegalStateException("Failed to get group by id: " + id);
 	}
-	
+
 	private int generateID(Connection conn){
 		int res;
 		try {
@@ -144,15 +145,13 @@ public class Group {
 	public User getAdmin() {
 		return admin;
 	}
-	
+
 	public int getId() {
 		if (id == -1) throw new IllegalStateException("Group id not set");
 		return id;
 	}
-	
+
 	public SimpleStringProperty textProperty() {
 		return new SimpleStringProperty(name);
 	}
-	
-
 }

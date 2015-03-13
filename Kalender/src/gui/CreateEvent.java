@@ -4,8 +4,6 @@ package gui;
 import java.sql.Timestamp;
 
 import event.Event;
-import event.Room;
-import users.Admin;
 import users.User;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
@@ -19,38 +17,39 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 public class CreateEvent extends Application{
-	
+
 	users.Group g;
-	User u;
+
+	public CreateEvent(){
+		g = null;
+	}
 
 	public void start(final Stage primaryStage){
 		primaryStage.setTitle("Kalender - Ny event");
-		
+
 		GridPane grid = new GridPane();
 		grid.setAlignment(Pos.CENTER);
 		grid.setHgap(10);
 		grid.setVgap(10);
 		grid.setPadding(new Insets(25, 25, 25, 25));
-		
+
 		final Button btn1 = new Button("Opprett event");
 		HBox hbBtn = new HBox(10);
 		hbBtn.setAlignment(Pos.BOTTOM_RIGHT);
 		hbBtn.getChildren().add(btn1);
 		grid.add(hbBtn, 1, 5);
-		
+
 		final Button btn2 = new Button("Tilbake");
 		hbBtn.getChildren().add(btn2);
 		Scene scene = new Scene(grid, 300, 275);
 		primaryStage.setScene(scene);
-		
+
 		Text scenetitle = new Text("Skriv inn informasjonen");
 		scenetitle.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
 		grid.add(scenetitle, 0, 0, 2, 1);
@@ -70,30 +69,36 @@ public class CreateEvent extends Application{
 		grid.add(pw, 0, 4);
 		final PasswordField pwBox = new PasswordField();
 		grid.add(pwBox, 1, 4);
-		
-		
+
+
 		primaryStage.show();
-		
+
 		btn1.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent e){
-				Event ev=new Event(nameBox.getText(), Integer.parseInt(priBox.getText()), null, Login.me, new Timestamp(1), new Timestamp(2), beskBox.getText());
+				Event ev=new Event(nameBox.getText(), Integer.parseInt(priBox.getText()), null, Login.me, new Timestamp(1), new Timestamp(2), beskBox.getText());					
 				ev.save(Login.conn);
+				if (g!=null){
+					for (User u : g.getUsers(Login.conn)){
+						if (u.getId() == ev.getOwner().getId()) continue;
+						u.addEvent(Login.conn, ev);
+					}					
+				}
+				ev.replyToInvitation(Login.conn, Login.me, 1);
+				RenderEvent r = new RenderEvent();
+				r.init(ev);
+				r.start(primaryStage);
 			}
 		});
-		
+
 		btn2.setOnAction(new EventHandler<ActionEvent>() {
-		    public void handle(ActionEvent e) {
-		    	Hovedmeny hm = new Hovedmeny();
-		    	hm.start(primaryStage);
-		    }
+			public void handle(ActionEvent e) {
+				Hovedmeny hm = new Hovedmeny();
+				hm.start(primaryStage);
+			}
 		});
 	}
-	
+
 	public void init(users.Group g){
 		this.g = g;
 	}
-	public void init(User u){
-		this.u = u;
-	}
-	
 }

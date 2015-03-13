@@ -68,8 +68,10 @@ public class User {
 			Statement stmt = conn.createStatement();
 			stmt.executeUpdate(addEventSql);
 			stmt.close();
-			Varsel v = new Varsel(this, EventMessages.USER_INVITE_EVENT, ev);
-			v.save(conn);
+			if(!(id == ev.getOwner().getId())){
+				Varsel v = new Varsel(this, EventMessages.USER_INVITE_EVENT, ev);
+				v.save(conn);				
+			}
 
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -84,8 +86,21 @@ public class User {
 	//fjerner ev fra brukeriavtale:
 	public void removeEvent(Connection conn, Event ev, User u){
 		if (id == -1) this.save(conn);
-		if (!u.equals(ev.getOwner())) throw new IllegalArgumentException("Command attempted without authorization: removed event from user");
+		if (u.getId() == id) throw new IllegalArgumentException("you cannot remove yourself, you are admin");
 		String deleteEventSql = "DELETE FROM BRUKERIAVTALE WHERE BRUKERID=" + id + " AND AVTALEID=" + ev.getId();
+		try {
+			Statement stmt = conn.createStatement();
+			stmt.executeUpdate(deleteEventSql);
+			stmt.close();			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	//fjerner g fra brukerigruppe:
+	public void removeGroup(Connection conn, Group g, User removedby){
+		if (id == -1) this.save(conn);
+		if (removedby.getId() == id) throw new IllegalArgumentException("you cannot remove yourself, you are admin");
+		String deleteEventSql = "DELETE FROM BRUKERIGRUPPE WHERE BRUKERID=" + id + " AND GRUPPEID=" + g.getId();
 		try {
 			Statement stmt = conn.createStatement();
 			stmt.executeUpdate(deleteEventSql);
@@ -334,6 +349,17 @@ public class User {
 			//TODO
 			throw new IllegalStateException("Noe gikk feil ved henting av brukere");
 		}
+		
+	public void removeVarsel(Connection conn, Varsel v){
+		String deleteEventSql = "DELETE FROM VARSEL WHERE VARSELID=" + v.getId();
+		try {
+			Statement stmt = conn.createStatement();
+			stmt.executeUpdate(deleteEventSql);
+			stmt.close();			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
 	
 	public String getUsername() {
 		return username;
@@ -344,6 +370,34 @@ public class User {
 	
 	public SimpleStringProperty usernameProperty(){
 		return new SimpleStringProperty(username);
+	}
+	
+	//endrer for svar i til renderEvent:
+	public static SimpleStringProperty eventResponse(int i){
+		if (i>2 || i<0 ) throw new IllegalArgumentException("wrong parameters: 0, 1 or 2");
+		switch (i){
+		case 0 : return new SimpleStringProperty("NOT RESPONDED");
+		case 1 : return new SimpleStringProperty("ACCEPTED");
+		case 2 : return new SimpleStringProperty("DECLINED");
+		}
+		return null;
+	}
+
+	public static List<User> getInviteList(Connection conn, Event event) {
+		List<User> l = getUsers(conn);
+		List<User> l2 = event.getUsers(conn);
+		int i = 0;
+		while (i < l.size()){
+			for (int j = 0; j < l2.size(); j++) {
+				if (l.get(i).getId() == l2.get(j).getId()){
+					l.remove(l.get(i));
+					i--;
+					break;
+				}
+			}
+			i++;
+		}
+		return l;
 	}
 
 }

@@ -2,6 +2,7 @@ package gui;
 
 import java.sql.Connection;
 
+import event.Event;
 import users.Admin;
 import users.User;
 import notification.Varsel;
@@ -32,12 +33,17 @@ public class InviteUsers extends Application{
 	private ObservableList<User> users = FXCollections.observableArrayList();
 	private TableView<User> table = new TableView();
 	
+	private Event event;
 	private users.User selected;
 	private users.Group g;
 	
 	@Override
 	public void start(final Stage primaryStage) {
-		users.addAll(User.getInviteList(Login.conn, g));
+		primaryStage.setTitle("Kalender - Inviter Brukere - " + Login.me.getName());
+
+		
+		if (g!= null)users.addAll(User.getInviteList(Login.conn, g));
+		else if (event!=null) users.addAll(User.getInviteList(Login.conn, event));
 		if (users.size() != 0) selected = users.get(0);
 		
 		
@@ -71,9 +77,9 @@ public class InviteUsers extends Application{
 		table.getColumns().add(col1);
 		
  
-        Button btn1 = new Button("Tilbake");
+        Button btn1 = new Button("Til hovedmeny");
 		Button btn2 = new Button("Inviter bruker");
-       	Button btn3 = new Button("Videre");
+       	Button btn3 = new Button("Videre" );
        	grid.add(btn1, 0, 0);
        	grid.add(btn2, 2, 0);
        	grid.add(btn3, 4, 0);
@@ -96,18 +102,32 @@ public class InviteUsers extends Application{
 
     	btn2.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent e){
-				selected.addToGroup(Login.conn, g);
-				InviteUsers i = new InviteUsers();
-				i.init(g);
-				i.start(primaryStage);
+				InviteUsers i;
+				if (g == null){
+					selected.addEvent(Login.conn, event);
+					i = new InviteUsers();
+					i.init(event);
+				}else{
+					selected.addToGroup(Login.conn, g);
+					i = new InviteUsers();
+					i.init(g);
+				}
+				i.start(primaryStage);					
 			}
 		});
     	
     	btn3.setOnAction(new EventHandler<ActionEvent>() {
     		public void handle(ActionEvent e){
-    			RenderGroup cg = new RenderGroup();
-    			cg.init(g);
-    			cg.start(primaryStage);
+    			if (g == null){
+    				RenderEvent cg = new RenderEvent();
+        			cg.init(event);
+        			cg.start(primaryStage);
+        				
+    			}else{
+    				RenderGroup cg = new RenderGroup();
+    				cg.init(g);
+    				cg.start(primaryStage);    				
+    			}
     			
     		}
     	});
@@ -148,5 +168,8 @@ public class InviteUsers extends Application{
 	
 	public void init(users.Group g){
 		this.g = g;
+	}
+	public void init(Event e){
+		this.event = e;
 	}
 }
