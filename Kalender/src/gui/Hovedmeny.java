@@ -240,16 +240,8 @@ public class Hovedmeny extends Application{
 	}
 	
 	private void addEvent(final Event event, final Stage primaryStage){
-		GridPane p = null;
-		//finner pane som event befinner seg i:
-		for (Timestamp t : dayList.keySet()){
-			if (t.equals(event.getStartReduced())){
-				p = dayList.get(t);
-				break;
-			}
-		}
-		if (p == null) return;
-		
+		if (!dayList.containsKey(event.getStartReduced())) return;
+		GridPane p = dayList.get(event.getStartReduced());
 		Button btn = new Button(event.getName());
 		p.add(btn, 0 , p.getChildren().size());
 		btn.setOnAction(new EventHandler<ActionEvent>(){
