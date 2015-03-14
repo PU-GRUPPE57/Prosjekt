@@ -123,14 +123,14 @@ public class RenderGroup extends Application{
 		});
 		btn4.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent e){
-				Hovedmeny hm = new Hovedmeny(LocalDate.now());
+				Hovedmeny hm = new Hovedmeny(LocalDate.now(),Hovedmeny.VISIBLE);
 				hm.start(primaryStage);
 			}
 		});
 		btn5.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent e){
 				g.deleteGroup(Login.conn);
-				Hovedmeny hm = new Hovedmeny(LocalDate.now());hm.start(primaryStage);
+				Hovedmeny hm = new Hovedmeny(LocalDate.now(),Hovedmeny.VISIBLE);
 				hm.start(primaryStage);
 			}
 		});

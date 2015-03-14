@@ -1,11 +1,14 @@
 package gui;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
 
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -19,38 +22,52 @@ import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+import event.Event;
 
 
 public class Hovedmeny extends Application{
 
 	private LocalDate time;
+	public static final int VISIBLE = 0;
+	public static final int HIDDEN = 1;
+	public static final int ALL = 2;
 	
-	public Hovedmeny(LocalDate date){
+	private int choice;
+
+	private HashMap<Timestamp, GridPane> dayList = new HashMap<>();
+
+	public Hovedmeny(LocalDate date, int choice){
 		super();
+		if (choice<0 || choice >2) throw new IllegalArgumentException("Wrong integer");
 		this.time = date;
+		this.choice = choice;
 	}
-	
 	public void start(final Stage primaryStage){
 		primaryStage.setTitle("Kalender - Hovedmeny - " + Login.me.getName());
 		BorderPane root = new BorderPane();
 		Scene scene = new Scene(root, 1000, 750);
 		primaryStage.setScene(scene);
-		LocalDate now = LocalDate.now();
 		initCalender(root);
 		initButtons(root, primaryStage);
+		initEvents(primaryStage);
 		primaryStage.show();
 	}
 
 
 	//Bygger designet til kalenderen:
 	private void initCalender(BorderPane root) {
+		boolean iscorrectmonth = false;
 		GridPane calendar = new GridPane();
 		String[] days = {"Mandag", "Tirsdag", "Onsdag",
 				"Torsdag", "Fredag", "Lørdag", "Søndag"};
 		for (int c = 0; c < 8; ++c) {
 			ColumnConstraints col = new ColumnConstraints();
-			col.setPercentWidth(100/8);calendar.getColumnConstraints().add(col);
+			col.setPercentWidth(100/8);
+			calendar.getColumnConstraints().add(col);
 		}
 		for (int r = 0; r < 7; ++r) {
 			RowConstraints row = new RowConstraints();
@@ -66,8 +83,18 @@ public class Hovedmeny extends Application{
 				if (c > 0 && r > 0) {
 					Label day = new
 							Label(String.valueOf(cal.get(Calendar.DATE)));
+					
+					//Lager individuell eventliste i dagens rute:
+					GridPane eventlist = new GridPane();
+					eventlist.setAlignment(Pos.CENTER);
+					date.getChildren().add(eventlist);
+					
+					//Legger inn i hashmap dayList referanse til ruten:
+					if (cal.get(Calendar.DATE) == 1) iscorrectmonth = !iscorrectmonth;
+					if (iscorrectmonth) dayList.put(new Timestamp(cal.getTime().getTime()), eventlist);
+
 					date.getChildren().add(day);
-					cal.add(Calendar.DATE, 1);
+					cal.add(Calendar.DATE, 1); //kalender dag++;
 				}
 				//setter ukenr:
 				if (c == 0 && r > 0) {
@@ -121,15 +148,17 @@ public class Hovedmeny extends Application{
 		grid.setHgap(10);
 		grid.setVgap(10);
 		grid.setPadding(new Insets(25, 25, 25, 25));
-		
-		
+
+
 		Label title = new Label(time.getMonth().name());
 		Label title2 = new Label(String.valueOf(time.getYear()));
 		title.setFont(Font.font("Verdana", FontWeight.BOLD, 20));
 		title2.setFont(Font.font("Verdana", FontWeight.BOLD, 15));
 		grid.add(title, 3, 0);
 		grid.add(title2, 3, 1);
-		
+
+		Button btn0 = new Button("-->");
+		grid.add(btn0, 8, 2);
 		Button btn1 = new Button("Varsel");
 		grid.add(btn1, 1,2);
 		Button btn2 = new Button("Grupper");
@@ -138,21 +167,21 @@ public class Hovedmeny extends Application{
 		grid.add(btn3, 3 , 2);
 		Button btn4 = new Button("Logg ut");
 		grid.add(btn4, 4, 2);
-		Button btn5 = new Button("<--");
-		grid.add(btn5, 0, 2);
-		Button btn6 = new Button("-->");
-		grid.add(btn6, 5, 2);
-		//			Button btn6 = new Button("");
-		//			hbBtn.getChildren().add(btn6);
-		//			Button btn7 = new Button("");
-		//			hbBtn.getChildren().add(btn7);
-		//			Button btn8 = new Button("");
-		//			hbBtn.getChildren().add(btn8);
-		//			Button btn9 = new Button("");
-		//			hbBtn.getChildren().add(btn9);
-		//			Button btn10 = new Button("");
-		//			hbBtn.getChildren().add(btn10);
-		
+		Button btn5 = new Button("Vis alle event");
+		grid.add(btn5, 5 , 2);
+		Button btn6 = new Button("Vis kun skjulte");
+		grid.add(btn6, 6, 2);
+		Button btn7 = new Button("Vis normalt");
+		grid.add(btn7, 7, 2);
+		Button btn8 = new Button("<--");
+		grid.add(btn8, 0, 2);
+
+		btn0.setOnAction(new EventHandler<ActionEvent>() {
+			public void handle(ActionEvent e){
+				Hovedmeny hm = new Hovedmeny(time.plusMonths(1),choice);
+				hm.start(primaryStage);
+			}
+		});
 		btn1.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent e){
 				RenderNotifications r = new RenderNotifications();
@@ -166,16 +195,12 @@ public class Hovedmeny extends Application{
 				rg.start(primaryStage);
 			}
 		});
-		
 		btn3.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent e){
 				CreateEvent c = new CreateEvent(null);
 				c.start(primaryStage);
 			}
 		});
-		
-		
-		
 		btn4.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent e){
 				Login.me = null;
@@ -185,17 +210,70 @@ public class Hovedmeny extends Application{
 		});
 		btn5.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent e){
-				Hovedmeny hm = new Hovedmeny(time.minusMonths(1));
+				choice = ALL;
+				Hovedmeny hm = new Hovedmeny(time,choice);
 				hm.start(primaryStage);
 			}
 		});
 		btn6.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent e){
-				Hovedmeny hm = new Hovedmeny(time.plusMonths(1));
+				choice = HIDDEN;
+				Hovedmeny hm = new Hovedmeny(time,choice);
+				hm.start(primaryStage);
+			}
+		});
+		btn7.setOnAction(new EventHandler<ActionEvent>() {
+			public void handle(ActionEvent e){
+				choice = VISIBLE;
+				Hovedmeny hm = new Hovedmeny(time,choice);
+				hm.start(primaryStage);
+			}
+		});
+		btn8.setOnAction(new EventHandler<ActionEvent>() {
+			public void handle(ActionEvent e){
+				Hovedmeny hm = new Hovedmeny(time.minusMonths(1),choice);
 				hm.start(primaryStage);
 			}
 		});
 
 		root.setTop(grid);
+	}
+	
+	private void addEvent(final Event event, final Stage primaryStage){
+		GridPane p = null;
+		//finner pane som event befinner seg i:
+		for (Timestamp t : dayList.keySet()){
+			if (t.equals(event.getStartReduced())){
+				p = dayList.get(t);
+				break;
+			}
+		}
+		if (p == null) return;
+		
+		Button btn = new Button(event.getName());
+		p.add(btn, 0 , p.getChildren().size());
+		btn.setOnAction(new EventHandler<ActionEvent>(){
+			public void handle(ActionEvent e){
+				RenderEvent re = new RenderEvent(event);
+				re.start(primaryStage);
+			}
+		});
+	}
+	
+	private void initEvents(final Stage primaryStage){
+		List<Event> events;
+		switch (choice){
+		case ALL : events = Login.me.getAllEvents(Login.conn);
+		break;
+		case VISIBLE: events = Login.me.getVisibleEvents(Login.conn);
+		break;
+		case HIDDEN: events = Login.me.getHiddenEvents(Login.conn);
+		break;
+		default: throw new IllegalStateException();
+		}
+		for (Event event : events) {
+			addEvent(event, primaryStage);
+		}
+		
 	}
 }

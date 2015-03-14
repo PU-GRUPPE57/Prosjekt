@@ -92,7 +92,7 @@ public class RenderGroups extends Application{
        	
     	btn1.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent e){
-				Hovedmeny hm = new Hovedmeny(LocalDate.now());
+				Hovedmeny hm = new Hovedmeny(LocalDate.now(),Hovedmeny.VISIBLE);
 				hm.start(primaryStage);
 			}
 		});

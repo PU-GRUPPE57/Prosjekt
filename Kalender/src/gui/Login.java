@@ -67,7 +67,7 @@ public class Login extends Application{
 			public void handle(ActionEvent e){
 				me = User.login(conn, userTextField.getText(), pwBox.getText());
 				if (me !=null){
-					Hovedmeny hm = new Hovedmeny(LocalDate.now());
+					Hovedmeny hm = new Hovedmeny(LocalDate.now(),Hovedmeny.VISIBLE);
 					hm.start(primaryStage);					
 				}
 			}

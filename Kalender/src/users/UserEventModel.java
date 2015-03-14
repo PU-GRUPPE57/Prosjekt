@@ -16,6 +16,9 @@ public class UserEventModel {
 	private User u;
 	private SimpleIntegerProperty status, visibility;
 	
+	public static final int VISIBLE = 1;
+	public static final int HIDDEN = 0;
+	
 	
 	private UserEventModel(Event e, User u, SimpleIntegerProperty status, SimpleIntegerProperty visibility){
 		this.u=u;
@@ -32,7 +35,7 @@ public class UserEventModel {
 		return l;
 	}
 	
-	private static UserEventModel getUserEventModel(Connection conn, User u,Event e){
+	public static UserEventModel getUserEventModel(Connection conn, User u,Event e){
 		try {
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM BRUKERIAVTALE WHERE BRUKERID = " + u.getId() +" AND AVTALEID = " + e.getId());
@@ -63,6 +66,12 @@ public class UserEventModel {
 	}
 	public Event getE() {
 		return e;
+	}
+	public int getStatus() {
+		return status.get();
+	}
+	public Integer getVisibility() {
+		return visibility.get();
 	}
 
 }

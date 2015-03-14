@@ -5,7 +5,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -205,7 +210,26 @@ public class Event {
 	public Timestamp getStart() {
 		return start;
 	}
+	
+	public Timestamp getStartReduced(){
+		return new Timestamp(start.getYear(), start.getMonth(), start.getDate(), 0 ,0 ,0,0);
+		
+	}
+	
 	public Timestamp getEnd() {
 		return end;
+	}
+	
+	public static Timestamp convertTimestamp(String day, String month, String year){
+		DateFormat dateformat = new SimpleDateFormat("dd/MM/YYYY");
+		Date date;
+		try {
+			date = dateformat.parse(day + "/" + month + "/" + year);
+			long time = date.getTime();
+			return new Timestamp(time);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 }

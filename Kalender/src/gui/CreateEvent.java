@@ -3,6 +3,10 @@ package gui;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.util.Calendar;
+import java.util.Date;
+
+import com.sun.javafx.css.CalculatedValue;
 
 import event.Event;
 import users.User;
@@ -45,7 +49,7 @@ public class CreateEvent extends Application{
 		HBox hbBtn = new HBox(10);
 		hbBtn.setAlignment(Pos.BOTTOM_RIGHT);
 		hbBtn.getChildren().add(btn1);
-		grid.add(hbBtn, 1, 5);
+		grid.add(hbBtn, 1, 6);
 
 		final Button btn2 = new Button("Tilbake");
 		hbBtn.getChildren().add(btn2);
@@ -71,16 +75,16 @@ public class CreateEvent extends Application{
 		Label time = new Label ("HH MM");
 
 		GridPane dateField = new GridPane();
-		final TextField day = new TextField();
-		final TextField month= new TextField();
-		final TextField year = new TextField();
+		final NumberTextField day = new NumberTextField(2);
+		final NumberTextField month= new NumberTextField(2);
+		final NumberTextField year = new NumberTextField(4);
 		dateField.add(day, 0, 0);
 		dateField.add(month, 1, 0);
 		dateField.add(year, 2, 0);
 		
 		GridPane timeField = new GridPane();
-		final TextField hours = new TextField();
-		final TextField minutes= new TextField();
+		final NumberTextField hours = new NumberTextField(2);
+		final NumberTextField minutes= new NumberTextField(2);
 		timeField.add(hours, 0, 0);
 		timeField.add(minutes, 1, 0);
 		
@@ -95,7 +99,16 @@ public class CreateEvent extends Application{
 
 		btn1.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent e){
-				Event ev=new Event(nameBox.getText(), Integer.parseInt(priBox.getText()), null, Login.me, new Timestamp(1), new Timestamp(2), beskBox.getText());					
+				Calendar cal = Calendar.getInstance();
+				cal.set(Integer.valueOf(year.getText()), Integer.valueOf(month.getText()) - 1, Integer.valueOf(day.getText()), Integer.valueOf(hours.getText()), Integer.valueOf(minutes.getText()));
+				
+				Date date = cal.getTime();
+//				Timestamp t2 =Event.convertTimestamp(day1.getText(), month2.getText(), year2.getText());
+//				t2.setHours(arg0);
+//				t2.setMinutes(arg0);
+//				
+				Timestamp t1 = new Timestamp(date.getTime());
+				Event ev=new Event(nameBox.getText(), Integer.parseInt(priBox.getText()), null, Login.me, t1, new Timestamp(0), beskBox.getText());					
 				ev.save(Login.conn);
 				if (g!=null){
 					for (User u : g.getUsers(Login.conn)){
@@ -111,9 +124,47 @@ public class CreateEvent extends Application{
 
 		btn2.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent e) {
-				Hovedmeny hm = new Hovedmeny(LocalDate.now());
+				Hovedmeny hm = new Hovedmeny(LocalDate.now(), Hovedmeny.VISIBLE);
 				hm.start(primaryStage);
 			}
 		});
+	}
+	private class NumberTextField extends TextField
+	{
+		private int max;
+		
+		private NumberTextField(int max){
+			this.max = max;
+		}
+
+	    @Override
+	    public void replaceText(int start, int end, String text)
+	    {
+	        if (validate(text))
+	        {
+	            super.replaceText(start, end, text);
+	        }
+	    }
+
+	    @Override
+	    public void replaceSelection(String text)
+	    {
+	        if (validate(text))
+	        {
+	            super.replaceSelection(text);
+	            verify();
+	        }
+	    }
+
+	    private boolean validate(String text)
+	    {
+	        return ("".equals(text) || text.matches("[0-9]"));
+	    }
+	    private void verify() {
+	        if (getText().length() > max) {
+	            setText(getText().substring(0, max));
+	        }
+
+	    }
 	}
 }

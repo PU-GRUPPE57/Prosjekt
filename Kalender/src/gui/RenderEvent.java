@@ -34,12 +34,14 @@ public class RenderEvent extends Application{
 	private ObservableList<UserEventModel> users = FXCollections.observableArrayList();
 	private TableView<UserEventModel> table = new TableView<UserEventModel>();
 	private User selected;
-	
+	private UserEventModel relation;
+
 	public RenderEvent(Event e){
 		super();
 		this.event = e;
+		relation  = UserEventModel.getUserEventModel(Login.conn, Login.me, event);
 	}
-	
+
 	public void start(final Stage primaryStage){
 		primaryStage.setTitle("Kalender - Gruppe - "  + " - " + Login.me.getName());
 
@@ -64,20 +66,21 @@ public class RenderEvent extends Application{
 		Button btn4 = new Button("Jeg deltar");
 		Button btn5 = new Button("Jeg deltar ikke");
 		Button btn6 = new Button("Slett avtale");
-		Button btn7 = new Button("Slett bruker");
-		
+		String btn7txt = (relation.getVisibility() == UserEventModel.VISIBLE) ? "Skjul avtale" : "Fjern avtale fra skjulte";
+		Button btn7 = new Button(btn7txt);
+
 		//Sjekk for at kun admin kan legge til bruker og opprette event:
 		if (Login.me.getId() == event.getOwner().getId()){
 			grid.add(btn1, 1, 2);
 			grid.add(btn3, 2,2);
 			grid.add(btn6,1,4);
-			grid.add(btn7,3,4);
-			
+
 		}
 		grid.add(btn2, 0 , 2);
 		grid.add(btn4, 0 , 4);
 		grid.add(btn5, 2 , 4);
-		
+		grid.add(btn7,3,4);
+
 		Callback<TableColumn<UserEventModel, String>, TableCell<UserEventModel, String>> stringCellFactory =
 				new Callback<TableColumn<UserEventModel, String>, TableCell<UserEventModel, String>>() {
 			@Override
@@ -105,8 +108,8 @@ public class RenderEvent extends Application{
 		vbox.getChildren().addAll(label, table);
 
 		((javafx.scene.Group) scene.getRoot()).getChildren().addAll(vbox);
-		
-		
+
+
 		primaryStage.setScene(scene);
 		Text scenetitle = new Text("Event " + event.getName());
 		scenetitle.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
@@ -127,13 +130,13 @@ public class RenderEvent extends Application{
 		});
 		btn2.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent e){
-				Hovedmeny hm = new Hovedmeny(LocalDate.now());
+				Hovedmeny hm = new Hovedmeny(LocalDate.now(),Hovedmeny.VISIBLE);
 				hm.start(primaryStage);
 			}
 		});
 		btn4.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent e){
-				
+
 				event.replyToInvitation(Login.conn, Login.me, 1);
 				RenderEvent re = new RenderEvent(event);
 				re.start(primaryStage);
@@ -149,41 +152,46 @@ public class RenderEvent extends Application{
 		btn6.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent e){
 				event.deleteEvent(Login.conn);
-				Hovedmeny hm = new Hovedmeny(LocalDate.now());
+				Hovedmeny hm = new Hovedmeny(LocalDate.now(),Hovedmeny.VISIBLE);
 				hm.start(primaryStage);
 			}
 		});
 		btn7.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent e){
-				selected.removeEvent(Login.conn, event, Login.me);
+				if (relation.getVisibility() == UserEventModel.VISIBLE){
+					Login.me.hideEvent(Login.conn, event);
+				}
+				else {
+					Login.me.unhideEvent(Login.conn, event);
+				}
 				RenderEvent re = new RenderEvent(event);
 				re.start(primaryStage);
 			}
 		});
 		primaryStage.show();
 	}
-	
+
 	private class OnClick implements EventHandler<MouseEvent>{
 
 		@Override
 		public void handle(MouseEvent click) {
 			TableCell t  = (TableCell) click.getSource();
 			selected =  users.get(t.getIndex()).getU();
-			
-			
+
+
 		}
 	}
 	class MyStringTableCell extends TableCell<Group, String> {
-		 
-        @Override
-        public void updateItem(String item, boolean empty) {
-            super.updateItem(item, empty);
-            setText(empty ? null : getString());
-            setGraphic(null);
-        }
- 
-        private String getString() {
-            return getItem() == null ? "" : getItem().toString();
-        }
-    }
+
+		@Override
+		public void updateItem(String item, boolean empty) {
+			super.updateItem(item, empty);
+			setText(empty ? null : getString());
+			setGraphic(null);
+		}
+
+		private String getString() {
+			return getItem() == null ? "" : getItem().toString();
+		}
+	}
 }
