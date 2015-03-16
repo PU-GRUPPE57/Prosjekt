@@ -80,9 +80,10 @@ public class RenderEvent extends Application{
 		//Sjekk for at kun admin kan legge til bruker og opprette event:
 		if (Login.me.getId() == event.getOwner().getId()){
 			buttongrid.add(btn1, 1, 2);
-			buttongrid.add(btn3, 2,2);
 			buttongrid.add(btn6,1,4);
 			buttongrid.add(btn8, 4,4);
+			if (event.getRoom(Login.conn) == null) buttongrid.add(btn3, 2,2);
+			System.out.println(event.getRoom(Login.conn));
 
 		}
 		buttongrid.add(btn2, 0 , 2);
@@ -106,7 +107,7 @@ public class RenderEvent extends Application{
 		Text sltid = new Text(event.getEnd().toString());
 		Label l = new Label("Sted: ");
 		String stedtxt = "Sted ikke angitt";
-		if (event.getRom() != null) stedtxt = event.getRom().toString();
+		if (event.getRoom(Login.conn) != null) stedtxt = event.getRoom(Login.conn).toString();
 		Text sted = new Text(stedtxt);
 		
 		infogrid.add(owner, 0, 0);
@@ -165,7 +166,8 @@ public class RenderEvent extends Application{
 
 		btn3.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent e){
-				//TODO romres
+				RomRes rr = new RomRes(event);
+				rr.start(primaryStage);
 			}
 		});
 		btn2.setOnAction(new EventHandler<ActionEvent>() {

@@ -40,6 +40,11 @@ public class Event {
 		this.id = -1;
 		this.rom=rom;
 		this.owner=owner;
+		start.setSeconds(0);
+		start.setNanos(0);		
+		slutt.setSeconds(0);
+		slutt.setNanos(0);
+		
 		this.start = start;
 		this.end = slutt;
 		this.description= description;
@@ -59,7 +64,8 @@ public class Event {
 
 	public void save(Connection conn){
 		id = generateID(conn);
-		String addEventSql = "INSERT INTO AVTALE VALUES " + "(" + id + ",'" + name + "','" + start + "','" + end + "','" + description + "','" + priority + "','" + owner.getId() + "')";
+		
+		String addEventSql = "INSERT INTO AVTALE VALUES " + "(" + id + ",'" + name +  "','" + start + "','" + end + "','" + description + "','" + priority + "','" + owner.getId() + "')";
 		try {
 			Statement stmt = conn.createStatement();
 			stmt.executeUpdate(addEventSql);
@@ -240,6 +246,20 @@ public class Event {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	public String getRoom(Connection conn){
+		String Sql = "SELECT ROM.NAVN FROM AVTALE,ROMRES, ROM WHERE AVTALE.AVTALEID=ROMRES.AVTALEID AND AVTALE.AVTALEID=" + id + " AND ROM.ROMID = ROMRES.ROMID";
+		try {
+			Statement stmt = conn.createStatement();
+			ResultSet rs= stmt.executeQuery(Sql);
+			if (!rs.next()) return null;
+			String s = rs.getString("NAVN");
+			stmt.close();
+			return s;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}return null;
 	}
 	
 	public void romres(Connection conn, Room r) {

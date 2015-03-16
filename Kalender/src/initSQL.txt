@@ -36,7 +36,7 @@ CREATE TABLE `BrukerIgruppe` (
 CREATE TABLE `Rom`(
  	`RomID` INT UNSIGNED NOT NULL,
  	`Size` INT UNSIGNED NOT NULL,
- 	`Navn` VARCHAR(45),
+ 	`Navn` VARCHAR(45) UNIQUE,
  	`Type` VARCHAR(45),
  	PRIMARY KEY (`RomID`)
  );
