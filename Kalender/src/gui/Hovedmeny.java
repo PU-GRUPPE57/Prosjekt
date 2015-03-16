@@ -69,16 +69,22 @@ public class Hovedmeny extends Application{
 			col.setPercentWidth(100/8);
 			calendar.getColumnConstraints().add(col);
 		}
+		
 		for (int r = 0; r < 7; ++r) {
 			RowConstraints row = new RowConstraints();
 			row.setPercentHeight(100/7);
 			calendar.getRowConstraints().add(row);
 		}
+		
 		Calendar cal = getStartDateOfCalendar(time.getYear(), time.getMonthValue());
+		System.out.println(cal.get(Calendar.MONTH));
+		System.out.println(time.getMonthValue());
+		
 		for (int r = 0; r < 7; ++r) {
 			for (int c = 0; c < 8; ++c) {
 				Pane date = new Pane();
 				date.setStyle("-fx-border-color: black;");
+				
 				//Setter dager:
 				if (c > 0 && r > 0) {
 					Label day = new
@@ -92,7 +98,10 @@ public class Hovedmeny extends Application{
 					//Legger inn i hashmap dayList referanse til ruten:
 					if (cal.get(Calendar.DATE) == 1) iscorrectmonth = !iscorrectmonth;
 					if (iscorrectmonth) dayList.put(new Timestamp(cal.getTime().getTime()), eventlist);
-
+					
+					if (cal.get(Calendar.MONTH) != (time.getMonthValue()-1))
+						day.setStyle("-fx-text-fill: #c4c4c4");
+					
 					date.getChildren().add(day);
 					cal.add(Calendar.DATE, 1); //kalender dag++;
 				}
