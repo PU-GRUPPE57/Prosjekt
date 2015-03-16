@@ -77,8 +77,6 @@ public class Hovedmeny extends Application{
 		}
 		
 		Calendar cal = getStartDateOfCalendar(time.getYear(), time.getMonthValue());
-		System.out.println(cal.get(Calendar.MONTH));
-		System.out.println(time.getMonthValue());
 		
 		for (int r = 0; r < 7; ++r) {
 			for (int c = 0; c < 8; ++c) {
