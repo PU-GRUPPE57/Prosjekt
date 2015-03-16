@@ -33,6 +33,8 @@ public class Event {
 		if (!name.matches("[a-ÂA-≈0-9]+")){
 			throw new IllegalArgumentException();
 		}
+		
+		if (start.after(slutt)) throw new IllegalArgumentException("Starttid etter sluttid");
 		this.name = name;
 		this.priority = priority;
 		this.id = -1;
@@ -63,7 +65,6 @@ public class Event {
 			stmt.executeUpdate(addEventSql);
 			stmt.close();
 			addUser(conn,owner);
-			//			rom.romRes(conn, this);
 
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -195,31 +196,39 @@ public class Event {
 	public Room getRom() {
 		return rom;
 	}
-	//TODO test
+
 	public void changeTime(Connection conn, User u, Timestamp start, Timestamp slutt){
-		if (u == owner){
-			this.start = start;
-			this.end = slutt;
+		if (start.after(slutt))throw new IllegalArgumentException("starttid etter sluttid");
+		this.start = start;
+		this.end = slutt;
+
+		String sql = "UPDATE AVTALE SET START= '" + start + "', SLUTT= '"+ slutt + "' WHERE AVTALEID= " + id;
+		try {
+			Statement stmt = conn.createStatement();
+			stmt.executeUpdate(sql);
+			stmt.close();
 			List<User> participants = getUsers(conn);
 			for (User user : participants) {
 				Varsel v = new Varsel(user, EventMessages.EVENT_ENDRET, this);
 				v.save(conn);
 			}
+		}catch(SQLException e){
+			e.printStackTrace();
 		}
 	}
 	public Timestamp getStart() {
 		return start;
 	}
-	
+
 	public Timestamp getStartReduced(){
 		return new Timestamp(start.getYear(), start.getMonth(), start.getDate(), 0 ,0 ,0,0);
-		
+
 	}
-	
+
 	public Timestamp getEnd() {
 		return end;
 	}
-	
+
 	public static Timestamp convertTimestamp(String day, String month, String year){
 		DateFormat dateformat = new SimpleDateFormat("dd/MM/YYYY");
 		Date date;
@@ -231,5 +240,9 @@ public class Event {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	public void romres(Connection conn, Room r) {
+		r.romRes(conn, this);
 	}
 }

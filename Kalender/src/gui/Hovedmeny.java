@@ -101,12 +101,13 @@ public class Hovedmeny extends Application{
 					Label week = new
 							Label(String.valueOf(cal.get(Calendar.WEEK_OF_YEAR)));
 					date.getChildren().add(week);
+					week.setStyle("-fx-text-fill: blue");
 				}
 				//Setter navn på dager:
 				if (r == 0 && c > 0) {
 					Label weekDay = new Label(days[c-1]);
 					date.getChildren().add(weekDay);
-					weekDay.setStyle("-fx-focolor: red" );
+					weekDay.setStyle("-fx-text-fill: red" );
 				}
 				//Setter
 				calendar.add(date, c, r);

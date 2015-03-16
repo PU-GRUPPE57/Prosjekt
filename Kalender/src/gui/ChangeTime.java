@@ -27,17 +27,17 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
-public class CreateEvent extends Application{
+public class ChangeTime extends Application{
 
-	users.Group g;
-
-	public CreateEvent(users.Group g){
+	private Event event;
+	
+	public ChangeTime(Event e){
 		super();
-		this.g = g;
+		this.event = e;
 	}
 
 	public void start(final Stage primaryStage){
-		primaryStage.setTitle("Kalender - Ny event");
+		primaryStage.setTitle("Kalender -" + event.getName() + "- Endre tidspunkt");
 
 		GridPane grid = new GridPane();
 		grid.setAlignment(Pos.CENTER);
@@ -45,7 +45,7 @@ public class CreateEvent extends Application{
 		grid.setVgap(10);
 		grid.setPadding(new Insets(25, 25, 25, 25));
 
-		final Button btn1 = new Button("Opprett event");
+		final Button btn1 = new Button("lagre endring");
 		HBox hbBtn = new HBox(10);
 		hbBtn.setAlignment(Pos.BOTTOM_RIGHT);
 		hbBtn.getChildren().add(btn1);
@@ -56,21 +56,10 @@ public class CreateEvent extends Application{
 		Scene scene = new Scene(grid, 300, 275);
 		primaryStage.setScene(scene);
 
-		Text scenetitle = new Text("Skriv inn informasjonen");
+		Text scenetitle = new Text("Skriv inn nytt tidspunkt");
 		scenetitle.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
 		grid.add(scenetitle, 0, 0, 2, 1);
-		Label name = new Label("Navn:");
-		grid.add(name, 0, 1);
-		final TextField nameBox = new TextField();
-		grid.add(nameBox, 1, 1);
-		Label pri = new Label("Prioritet:");
-		grid.add(pri, 0, 2);
-		final TextField priBox = new TextField();
-		grid.add(priBox, 1, 2);
-		Label beskrivelse = new Label("Beskrivelse:");
-		grid.add(beskrivelse, 0, 3);
-		final TextField beskBox = new TextField();
-		grid.add(beskBox, 1, 3);
+
 		Label date = new Label("DD MM YYYY");
 		Label time = new Label ("HH MM");
 		Label date2 = new Label("DD MM YYYY");
@@ -116,6 +105,7 @@ public class CreateEvent extends Application{
 		grid.add(timeField2, 3, 5);
 
 
+
 		primaryStage.show();
 
 		btn1.setOnAction(new EventHandler<ActionEvent>() {
@@ -124,28 +114,22 @@ public class CreateEvent extends Application{
 				cal.set(Integer.valueOf(year.getText()), Integer.valueOf(month.getText()) - 1, Integer.valueOf(day.getText()), Integer.valueOf(hours.getText()), Integer.valueOf(minutes.getText()));
 				
 				Date date = cal.getTime();
-				Timestamp t1 = new Timestamp(date.getTime());
+				
+				Timestamp t = new Timestamp(date.getTime());
 				cal.set(Integer.valueOf(year2.getText()), Integer.valueOf(month2.getText()) - 1, Integer.valueOf(day2.getText()), Integer.valueOf(hours2.getText()), Integer.valueOf(minutes2.getText()));
 				Timestamp t2 = new Timestamp(cal.getTime().getTime());
 				
-				Event ev=new Event(nameBox.getText(), Integer.parseInt(priBox.getText()), null, Login.me, t1, t2, beskBox.getText());					
-				ev.save(Login.conn);
-				if (g!=null){
-					for (User u : g.getUsers(Login.conn)){
-						if (u.getId() == ev.getOwner().getId()) continue;
-						u.addEvent(Login.conn, ev);
-					}					
-				}
-				ev.replyToInvitation(Login.conn, Login.me, 1);
-				RenderEvent r = new RenderEvent(ev);
+				event.changeTime(Login.conn, Login.me, t , t2);
+				RenderEvent r = new RenderEvent(event);
 				r.start(primaryStage);
-			}
+				
+			}									
 		});
 
 		btn2.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent e) {
-				Hovedmeny hm = new Hovedmeny(LocalDate.now(), Hovedmeny.VISIBLE);
-				hm.start(primaryStage);
+			RenderEvent r = new RenderEvent(event);
+			r.start(primaryStage);
 			}
 		});
 	}
