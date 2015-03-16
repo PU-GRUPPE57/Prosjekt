@@ -62,8 +62,8 @@ public class Hovedmeny extends Application{
 	private void initCalender(BorderPane root) {
 		boolean iscorrectmonth = false;
 		GridPane calendar = new GridPane();
-		String[] days = {"Mandag", "Tirsdag", "Onsdag",
-				"Torsdag", "Fredag", "Lørdag", "Søndag"};
+		String[] days = {"Monday", "Tuesday", "Wednesday",
+				"Thursday", "Friday", "Saturday", "Sunday"};
 		for (int c = 0; c < 8; ++c) {
 			ColumnConstraints col = new ColumnConstraints();
 			col.setPercentWidth(100/8);
@@ -117,7 +117,7 @@ public class Hovedmeny extends Application{
 					Label weekDay = new Label(days[c-1]);
 					date.getChildren().add(weekDay);
 					weekDay.setStyle("-fx-text-fill: #3c8efe");
-					weekDay.setFont(Font.font("Verdana", FontWeight.BOLD, 20));
+					weekDay.setFont(Font.font("Verdana", FontWeight.BOLD, 18));
 				}
 				
 				//Setter
