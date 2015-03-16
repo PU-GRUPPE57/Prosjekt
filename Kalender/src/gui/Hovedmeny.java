@@ -63,7 +63,7 @@ public class Hovedmeny extends Application{
 		boolean iscorrectmonth = false;
 		GridPane calendar = new GridPane();
 		String[] days = {"Mandag", "Tirsdag", "Onsdag",
-				"Torsdag", "Fredag", "Lørdag", "Søndag"};
+				"Torsdag", "Fredag", "LÃ¸rdag", "SÃ¸ndag"};
 		for (int c = 0; c < 8; ++c) {
 			ColumnConstraints col = new ColumnConstraints();
 			col.setPercentWidth(100/8);
@@ -99,16 +99,20 @@ public class Hovedmeny extends Application{
 				//setter ukenr:
 				if (c == 0 && r > 0) {
 					Label week = new
-							Label(String.valueOf(cal.get(Calendar.WEEK_OF_YEAR)));
+					Label(String.valueOf(cal.get(Calendar.WEEK_OF_YEAR)));
+					week.setStyle("-fx-text-fill: #c9c9c9;");
+					week.setFont(Font.font("Verdana", FontWeight.BOLD, 70));
 					date.getChildren().add(week);
-					week.setStyle("-fx-text-fill: blue");
 				}
-				//Setter navn på dager:
+				
+				//Setter navn pÃ¥ dager:
 				if (r == 0 && c > 0) {
 					Label weekDay = new Label(days[c-1]);
 					date.getChildren().add(weekDay);
-					weekDay.setStyle("-fx-text-fill: red" );
+					weekDay.setStyle("-fx-text-fill: #3c8efe");
+					weekDay.setFont(Font.font("Verdana", FontWeight.BOLD, 20));
 				}
+				
 				//Setter
 				calendar.add(date, c, r);
 			}
@@ -125,10 +129,10 @@ public class Hovedmeny extends Application{
 	return false;
 	}
 	/**
-	 * Finner startdagen for måneden:
-	 * @param curYear Nåværende år
-	 * @param curMonth Nåværende månede
-	 * @param curDate Nåværende dag(dato)
+	 * Finner startdagen for mï¿½neden:
+	 * @param curYear Nï¿½vï¿½rende ï¿½r
+	 * @param curMonth Nï¿½vï¿½rende mï¿½nede
+	 * @param curDate Nï¿½vï¿½rende dag(dato)
 	 * @return
 	 */
 	private Calendar getStartDateOfCalendar(int curYear, int
