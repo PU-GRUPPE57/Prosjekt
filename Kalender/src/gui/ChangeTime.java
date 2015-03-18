@@ -45,7 +45,7 @@ public class ChangeTime extends Application{
 		grid.setVgap(10);
 		grid.setPadding(new Insets(25, 25, 25, 25));
 
-		final Button btn1 = new Button("lagre endring");
+		final Button btn1 = new Button("Lagre endring");
 		HBox hbBtn = new HBox(10);
 		hbBtn.setAlignment(Pos.BOTTOM_RIGHT);
 		hbBtn.getChildren().add(btn1);
@@ -120,6 +120,9 @@ public class ChangeTime extends Application{
 				Timestamp t2 = new Timestamp(cal.getTime().getTime());
 				
 				event.changeTime(Login.conn, Login.me, t , t2);
+				
+				event.removeReservation(Login.conn);
+				
 				RenderEvent r = new RenderEvent(event);
 				r.start(primaryStage);
 				

@@ -90,7 +90,7 @@ public class RomRes extends Application{
  
         Button btn1 = new Button("Reserver");
 		Button btn2 = new Button("Tilbake");
-		Button btn3 = new Button("Endre Rom");
+		
 		
 		if ((room.size() !=0)) grid.add(btn1, 0, 0);
        	grid.add(btn2, 2, 0);
@@ -105,6 +105,7 @@ public class RomRes extends Application{
        	
     	btn1.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent e){
+				if (event.getRoom(Login.conn) != null) event.removeReservation(Login.conn);
 				selected.romRes(Login.conn, event);
 				RenderEvent re = new RenderEvent(event);
 				re.start(primaryStage);
@@ -117,13 +118,6 @@ public class RomRes extends Application{
 				re.start(primaryStage);
 			}
 		});
-    	
-    	btn3.setOnAction(new EventHandler<ActionEvent>() {
-    		public void handle(ActionEvent e){
-    			RenderEvent re = new RenderEvent(event);
-    			re.start(primaryStage);
-    		}
-    	});
     	
         
         primaryStage.setScene(scene);

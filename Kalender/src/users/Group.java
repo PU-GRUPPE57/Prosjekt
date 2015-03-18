@@ -47,7 +47,34 @@ public class Group {
 			e.printStackTrace();
 		}
 	}
-
+	
+	public void addEvent(Connection conn, Event event){
+		String addEventSql = "INSERT INTO GRUPPEIAVTALE VALUES " + "(" + event.getId() + "," + id + ")";
+		try {
+			Statement stmt = conn.createStatement();
+			stmt.executeUpdate(addEventSql);
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	public List<Event> getGroupEvents(Connection conn){
+		List<Event> l = new ArrayList<>();
+		String addEventSql = "SELECT * FROM GRUPPEIAVTALE WHERE GRUPPEID =" + id;
+		try {
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(addEventSql);
+			while(rs.next()){
+				l.add(Event.getEvent(conn, rs.getInt("AvtaleID")));
+			}
+			
+			stmt.close();
+			return l;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}return null;
+	}
+	
 	//fjerner bruker u:
 	public void removeUser(Connection conn, User u){
 		if (id == -1) save(conn);
@@ -67,8 +94,16 @@ public class Group {
 		String deleteEventSql = "DELETE FROM GRUPPE WHERE GRUPPEID=" + id;
 		try {
 			Statement stmt = conn.createStatement();
+			for (User user : getUsers(conn)) {
+				Varsel v = new Varsel(user, GroupMessages.GROUP_DELETED, this);
+				v.save(conn);
+			}
+			List<Event> l = getGroupEvents(conn);
+			for (Event event : l) {
+				event.deleteEvent(conn);
+			}
 			stmt.executeUpdate(deleteEventSql);
-			stmt.close();			
+			stmt.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -153,5 +188,21 @@ public class Group {
 
 	public SimpleStringProperty textProperty() {
 		return new SimpleStringProperty(name);
+	}
+	public List<Event> getEvents(Connection conn) {
+		List<Event> l = new ArrayList<Event>();
+		String sql = "SELECT AVTALEID FROM GRUPPEIAVTALE WHERE GRUPPEID =" + this.id;
+		
+		try {
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(sql);
+			while(rs.next()){
+				l.add(Event.getEvent(conn, rs.getInt("AvtaleID")));
+			}
+			stmt.close();
+			return l;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}return null;
 	}
 }

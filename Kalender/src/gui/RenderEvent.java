@@ -76,6 +76,7 @@ public class RenderEvent extends Application{
 		Button btn8 = new Button("Endre tidspunkt");
 		String btn7txt = (relation.getVisibility() == UserEventModel.VISIBLE) ? "Skjul avtale" : "Fjern avtale fra skjulte";
 		Button btn7 = new Button(btn7txt);
+		Button btn9 = new Button("Endre Rom");
 
 		//Sjekk for at kun admin kan legge til bruker og opprette event:
 		if (Login.me.getId() == event.getOwner().getId()){
@@ -83,7 +84,7 @@ public class RenderEvent extends Application{
 			buttongrid.add(btn6,1,4);
 			buttongrid.add(btn8, 4,4);
 			if (event.getRoom(Login.conn) == null) buttongrid.add(btn3, 2,2);
-			System.out.println(event.getRoom(Login.conn));
+			else buttongrid.add(btn9, 2, 2);
 
 		}
 		buttongrid.add(btn2, 0 , 2);
@@ -101,6 +102,8 @@ public class RenderEvent extends Application{
 		
 		Label owner = new Label("Avtale administrator: ");
 		Text own = new Text(event.getOwner().getUsername());
+		Label pri = new Label("Prioritet: ");
+		Text p = new Text(String.valueOf(event.getPriority()));
 		Label start = new Label("Starttid: ");
 		Text stid = new Text(event.getStart().toString());		
 		Label slutt = new Label("Sluttid: ");
@@ -112,12 +115,14 @@ public class RenderEvent extends Application{
 		
 		infogrid.add(owner, 0, 0);
 		infogrid.add(own, 1, 0);
-		infogrid.add(start, 0, 1);
-		infogrid.add(stid, 1, 1);
-		infogrid.add(slutt, 0, 2);
-		infogrid.add(sltid, 1, 2);		
-		infogrid.add(l, 0, 3);
-		infogrid.add(sted, 1, 3);
+		infogrid.add(pri, 0, 1);
+		infogrid.add(p, 1, 1);
+		infogrid.add(start, 0, 2);
+		infogrid.add(stid, 1, 2);
+		infogrid.add(slutt, 0, 3);
+		infogrid.add(sltid, 1, 3);		
+		infogrid.add(l, 0, 4);
+		infogrid.add(sted, 1, 4);
 		
 		
 		maingrid.add(infogrid, 1, 0);
@@ -172,7 +177,7 @@ public class RenderEvent extends Application{
 		});
 		btn2.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent e){
-				Hovedmeny hm = new Hovedmeny(LocalDate.now(),Hovedmeny.VISIBLE);
+				Hovedmeny hm = new Hovedmeny(LocalDate.now(),Hovedmeny.VISIBLE, Login.me);
 				hm.start(primaryStage);
 			}
 		});
@@ -194,7 +199,7 @@ public class RenderEvent extends Application{
 		btn6.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent e){
 				event.deleteEvent(Login.conn);
-				Hovedmeny hm = new Hovedmeny(LocalDate.now(),Hovedmeny.VISIBLE);
+				Hovedmeny hm = new Hovedmeny(LocalDate.now(),Hovedmeny.VISIBLE, Login.me);
 				hm.start(primaryStage);
 			}
 		});
@@ -215,6 +220,13 @@ public class RenderEvent extends Application{
 			public void handle(ActionEvent e){
 			ChangeTime c = new ChangeTime(event);
 			c.start(primaryStage);
+			}
+		});
+		primaryStage.show();
+		btn9.setOnAction(new EventHandler<ActionEvent>() {
+			public void handle(ActionEvent e){
+				RomRes rr = new RomRes(event);
+				rr.start(primaryStage);
 			}
 		});
 		primaryStage.show();

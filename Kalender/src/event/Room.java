@@ -133,11 +133,11 @@ public class Room {
 			Statement stmt = conn.createStatement();
 			stmt.executeUpdate(addEventSql);
 			stmt.close();
-//			List<User> participants = ev.getUsers(conn);
-//			for (User user : participants) {
-//				Varsel v = new Varsel(user, EventMessages.ROM_RESERVERT, ev);
-//				v.save(conn);				
-//			}
+			List<User> participants = ev.getUsers(conn);
+			for (User user : participants) {
+				Varsel v = new Varsel(user, EventMessages.ROM_RESERVERT, ev);
+				v.save(conn);				
+			}
 
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -180,8 +180,13 @@ public class Room {
 			while(rs.next()){
 				Timestamp t1 = rs.getTimestamp("Start");
 				Timestamp t2 = rs.getTimestamp("Slutt");
-				if (((t1.before(start) || t1.equals(start)) && ((t2.after(start)) || t2.equals(start))) || ((t1.after(start) || (t1.equals(start))) && (t2.after(end) || t2.equals(end)))){
-					l.add(Room.getRoom(conn, rs.getString("navn")));
+				
+				if ((start.compareTo(t1) <= 0) && (end.compareTo(t1) >= 0)){
+					l.add(Room.getRoom(conn,rs.getString("navn")));
+				}else if ((start.compareTo(t1) >= 0) && (start.compareTo(t2) <=0)){
+					l.add(Room.getRoom(conn,rs.getString("navn")));					
+				}else if ((end.compareTo(t1) >= 0) && (end.compareTo(t2) <=0)){
+					l.add(Room.getRoom(conn,rs.getString("navn")));	
 				}
 			}
 			stmt.close();

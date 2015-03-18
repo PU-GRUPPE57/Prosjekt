@@ -64,15 +64,19 @@ public class RenderGroup extends Application{
 		Button btn4 = new Button("Til hovedmeny");
 		Button btn5 = new Button("Slett gruppe");
 		Button btn6 = new Button("Slett bruker");
+		Button btn7 = new Button("Kalender");
+		Button btn8 = new Button("Se brukerkalender");
 		
 		//Sjekk for at kun admin kan legge til bruker og opprette event:
 		if (Login.me.getId() == g.getAdmin().getId()){
 			grid.add(btn2, 0, 2);
-			grid.add(btn3, 1, 2);
 			grid.add(btn5, 3 , 2);
 			grid.add(btn6, 4,2);
 		}
+		grid.add(btn3, 1, 2);
 		grid.add(btn4, 2 , 2);
+		grid.add(btn7, 5 , 2);
+		grid.add(btn8, 6 , 2);
 
 		Callback<TableColumn<User, String>, TableCell<User, String>> stringCellFactory =
 				new Callback<TableColumn<User, String>, TableCell<User, String>>() {
@@ -123,14 +127,14 @@ public class RenderGroup extends Application{
 		});
 		btn4.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent e){
-				Hovedmeny hm = new Hovedmeny(LocalDate.now(),Hovedmeny.VISIBLE);
+				Hovedmeny hm = new Hovedmeny(LocalDate.now(),Hovedmeny.VISIBLE, Login.me);
 				hm.start(primaryStage);
 			}
 		});
 		btn5.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent e){
 				g.deleteGroup(Login.conn);
-				Hovedmeny hm = new Hovedmeny(LocalDate.now(),Hovedmeny.VISIBLE);
+				Hovedmeny hm = new Hovedmeny(LocalDate.now(),Hovedmeny.VISIBLE, Login.me);
 				hm.start(primaryStage);
 			}
 		});
@@ -139,6 +143,18 @@ public class RenderGroup extends Application{
 				selected.removeGroup(Login.conn, g, Login.me);
 				RenderGroup re = new RenderGroup(g);
 				re.start(primaryStage);
+			}
+		});
+		btn7.setOnAction(new EventHandler<ActionEvent>() {
+			public void handle(ActionEvent e){
+				GroupCalendar gc = new GroupCalendar(LocalDate.now(), g);
+				gc.start(primaryStage);
+			}
+		});
+		btn8.setOnAction(new EventHandler<ActionEvent>() {
+			public void handle(ActionEvent e){
+				Hovedmeny hm = new Hovedmeny(LocalDate.now(), Hovedmeny.VISIBLE, selected);
+				hm.start(primaryStage);
 			}
 		});
 		primaryStage.show();

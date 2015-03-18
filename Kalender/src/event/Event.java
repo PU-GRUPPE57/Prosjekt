@@ -9,7 +9,6 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -17,7 +16,6 @@ import java.util.List;
 import notification.Varsel;
 import notification.Varsel.EventMessages;
 import notification.Varsel.UserMessages;
-import users.Admin;
 import users.User;
 
 public class Event {
@@ -99,7 +97,6 @@ public class Event {
 	}
 
 	//returnerer et map over brukere som er med, og hvilken tilstand de har (ikke svart (0) , takket ja (1), takket nei (2))
-	//TODO test
 	public HashMap<User, Integer> checkInviteStatus(Connection conn){
 		HashMap<User, Integer> m = new HashMap<User, Integer>();
 		String sql = "SELECT BRUKER.BRUKERID, BRUKERIAVTALE.STATUS FROM BRUKER, BRUKERIAVTALE WHERE BRUKER.BRUKERID=BRUKERIAVTALE.BRUKERID AND BRUKERIAVTALE.AVTALEID =" + this.id;
@@ -178,6 +175,22 @@ public class Event {
 
 	public void deleteEvent(Connection conn){
 		String deleteEventSql = "DELETE FROM AVTALE WHERE AVTALEID=" + id;
+		try{
+			Statement stmt = conn.createStatement();
+			List<User> users = getUsers(conn);
+			for (User user : users) {
+				Varsel v = new Varsel(user, EventMessages.EVENT_DELETED, this);
+				v.save(conn);
+			}
+			stmt.executeUpdate(deleteEventSql);
+			this.removeReservation(conn);
+			stmt.close();
+		}catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	public void removeReservation(Connection conn){
+		String deleteEventSql = "DELETE FROM ROMRES WHERE AVTALEID=" + id;
 		try {
 			Statement stmt = conn.createStatement();
 			stmt.executeUpdate(deleteEventSql);
@@ -185,6 +198,7 @@ public class Event {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		this.rom = null;
 	}
 
 	@Override
@@ -264,5 +278,8 @@ public class Event {
 	
 	public void romres(Connection conn, Room r) {
 		r.romRes(conn, this);
+	}
+	public int getPriority() {
+		return priority;
 	}
 }

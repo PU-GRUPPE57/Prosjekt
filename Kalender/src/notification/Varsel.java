@@ -4,13 +4,9 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.List;
-
-import javafx.beans.property.Property;
 import javafx.beans.property.SimpleStringProperty;
 import event.Event;
-import event.Room;
-import users.Connectable;
+import gui.Login;
 import users.Group;
 import users.User;
 
@@ -72,8 +68,14 @@ public class Varsel{
 		id = generateID(conn);
 		String sql1;
 		if (repliedUser != null) sql1 = "INSERT INTO VARSEL VALUES " + " (" + id +"," + event.getId() + "," + null + "," + repliedUser.getId() + ",'" + text + "'," + type + ")"; 
-		else if (event!=null) sql1 = "INSERT INTO VARSEL VALUES " + " (" + id + "," + event.getId() + "," + null + "," + null +",'" + text + "'," + type + ")";			
-		else if (group != null) sql1 = "INSERT INTO VARSEL VALUES " + " (" + id + "," + null + "," + group.getId() + "," + null + ",'" + text + "'," + type + ")";
+		else if (event!=null){
+			if (text.contains("slettet")) sql1 = "INSERT INTO VARSEL VALUES " + " (" + id + "," + null + "," + null + "," + null +",'" + text + "'," + type + ")";			
+			else sql1 = "INSERT INTO VARSEL VALUES " + " (" + id + "," + event.getId() + "," + null + "," + null +",'" + text + "'," + type + ")";			
+		}
+		else if (group != null){
+			if (text.contains("slettet")) sql1 = "INSERT INTO VARSEL VALUES " + " (" + id + "," + null + "," + null + "," + null + ",'" + text + "'," + type + ")";
+			else sql1 = "INSERT INTO VARSEL VALUES " + " (" + id + "," + null + "," + group.getId() + "," + null + ",'" + text + "'," + type + ")";
+		}
 		else throw new IllegalStateException("Varsel ikke laget");
 		String sql2 = "INSERT INTO BRUKERHARVARSEL VALUES " + " (" + user.getId() + "," + this.id + ")";
 		try {
@@ -103,10 +105,10 @@ public class Varsel{
 	}
 	//Meldingstyper:
 	public static enum EventMessages{
-		USER_INVITE_EVENT, ROM_RESERVERT, EVENT_ENDRET;
+		USER_INVITE_EVENT, ROM_RESERVERT, EVENT_ENDRET, EVENT_DELETED;
 	}
 	public static enum GroupMessages{
-		USER_ADDED, USER_REMOVED;
+		USER_ADDED, USER_REMOVED, GROUP_DELETED;
 	}
 	public static enum UserMessages{
 		EVENT_ACCEPTED, EVENT_DECLINED;
@@ -118,6 +120,8 @@ public class Varsel{
 		break;
 		case USER_REMOVED: text = "Du har blitt fjernet fra gruppe: " + group.getName() + " av: " + group.getAdmin().getUsername();
 		break;
+		case GROUP_DELETED: text = "Gruppen: " + group.getName() + " har blitt slettet";
+		break;
 		}
 	}
 	private void generateText(EventMessages e){
@@ -126,8 +130,9 @@ public class Varsel{
 		break;
 		case EVENT_ENDRET: text = "Eventet: " + event.getName() + " har blitt endret, nytt starttidspunkt " + event.getStart() + " nytt sluttpunkt " + event.getEnd() ;
 		break;
-		case ROM_RESERVERT: text = "Rommet: " + event.getRom().getName() + " har blitt reservert for: " + event.getName();
+		case ROM_RESERVERT: text = "Rommet: " + event.getRoom(Login.conn) + " har blitt reservert for: " + event.getName();
 		break;
+		case EVENT_DELETED: text = "Eventet: " + event.getName() + " har blitt slettet";
 		}
 	}
 	private void generateText(UserMessages u){

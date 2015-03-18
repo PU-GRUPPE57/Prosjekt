@@ -69,7 +69,7 @@ public class CreateGroup extends Application{
 
 		btn2.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent e) {
-				Hovedmeny hm = new Hovedmeny(LocalDate.now(),Hovedmeny.VISIBLE);
+				Hovedmeny hm = new Hovedmeny(LocalDate.now(),Hovedmeny.VISIBLE, Login.me);
 				hm.start(primaryStage);
 			}
 		});

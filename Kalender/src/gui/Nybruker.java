@@ -74,7 +74,7 @@ public class Nybruker extends Application{
 			public void handle(ActionEvent e){
 				Login.me = new User(name1Box.getText(), name2Box.getText(), brukernavnBox.getText(), pwBox.getText(), false);
 				Login.me.save(Login.conn);
-				Hovedmeny hm = new Hovedmeny(LocalDate.now(),Hovedmeny.VISIBLE);
+				Hovedmeny hm = new Hovedmeny(LocalDate.now(),Hovedmeny.VISIBLE, Login.me);
 				hm.start(primaryStage);
 			}
 		});

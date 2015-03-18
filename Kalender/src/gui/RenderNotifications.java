@@ -35,6 +35,7 @@ public class RenderNotifications extends Application{
 	private Button btn1 = new Button("Tilbake");
    	private Button btn2 = new Button("Til gruppe");
    	private Button btn3 = new Button("Til avtale");
+   	private Button btn4 = new Button("Slett varsel");
    	private GridPane grid = new GridPane();
 	
 	public RenderNotifications() {
@@ -84,6 +85,7 @@ public class RenderNotifications extends Application{
         
 		
        	grid.add(btn1, 0, 0);
+       	grid.add(btn4, 2, 0);
        	
         ((Group) scene.getRoot()).getChildren().addAll(vbox);
         
@@ -94,7 +96,7 @@ public class RenderNotifications extends Application{
         
 		btn1.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent e){
-				Hovedmeny hm = new Hovedmeny(LocalDate.now(),Hovedmeny.VISIBLE);
+				Hovedmeny hm = new Hovedmeny(LocalDate.now(),Hovedmeny.VISIBLE, Login.me);
 				hm.start(primaryStage);
 			}
 		});
@@ -107,10 +109,15 @@ public class RenderNotifications extends Application{
 		});
 		btn3.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent e){
-
-			Login.me.removeVarsel(Login.conn, selected);
 			RenderEvent re = new RenderEvent(selected.getEvent());
 			re.start(primaryStage);
+			}
+		});
+		btn4.setOnAction(new EventHandler<ActionEvent>() {
+			public void handle(ActionEvent e){
+				Login.me.removeVarsel(Login.conn, selected);
+				RenderNotifications re = new RenderNotifications();
+				re.start(primaryStage);
 			}
 		});
 	}

@@ -92,7 +92,7 @@ public class RenderGroups extends Application{
        	
     	btn1.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent e){
-				Hovedmeny hm = new Hovedmeny(LocalDate.now(),Hovedmeny.VISIBLE);
+				Hovedmeny hm = new Hovedmeny(LocalDate.now(),Hovedmeny.VISIBLE, Login.me);
 				hm.start(primaryStage);
 			}
 		});
@@ -127,7 +127,6 @@ public class RenderGroups extends Application{
 		public void handle(MouseEvent click) {
 			TableCell t  = (TableCell) click.getSource();
 			selected =  groups.get(t.getIndex());
-			
 			
 		}
 	}

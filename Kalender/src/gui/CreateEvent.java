@@ -37,7 +37,9 @@ public class CreateEvent extends Application{
 	}
 
 	public void start(final Stage primaryStage){
-		primaryStage.setTitle("Kalender - Ny event");
+		String title;
+		title = (g == null) ? "Kalender - Ny event" : "Kalender - " + g.getName() + " - Ny event";
+		primaryStage.setTitle(title);
 
 		GridPane grid = new GridPane();
 		grid.setAlignment(Pos.CENTER);
@@ -134,7 +136,8 @@ public class CreateEvent extends Application{
 					for (User u : g.getUsers(Login.conn)){
 						if (u.getId() == ev.getOwner().getId()) continue;
 						u.addEvent(Login.conn, ev);
-					}					
+					}
+					g.addEvent(Login.conn, ev);
 				}
 				ev.replyToInvitation(Login.conn, Login.me, 1);
 				RenderEvent r = new RenderEvent(ev);
@@ -144,7 +147,7 @@ public class CreateEvent extends Application{
 
 		btn2.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent e) {
-				Hovedmeny hm = new Hovedmeny(LocalDate.now(), Hovedmeny.VISIBLE);
+				Hovedmeny hm = new Hovedmeny(LocalDate.now(), Hovedmeny.VISIBLE, Login.me);
 				hm.start(primaryStage);
 			}
 		});

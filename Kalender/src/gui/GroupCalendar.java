@@ -26,29 +26,22 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-import users.User;
+import users.Group;
 import event.Event;
 
 
-public class Hovedmeny extends Application{
+public class GroupCalendar extends Application{
 
 	private LocalDate time;
-	public static final int VISIBLE = 0;
-	public static final int HIDDEN = 1;
-	public static final int ALL = 2;
+	private Group g;
 	
-	private int choice;
-	private User u;
-
 	private HashMap<Timestamp, GridPane> dayList = new HashMap<>();
 
-	public Hovedmeny(LocalDate date, int choice, User u){
+	public GroupCalendar(LocalDate date, Group g){
 		super();
-		if (choice<0 || choice >2) throw new IllegalArgumentException("Wrong integer");
 		this.time = date;
-		this.choice = choice;
-		this.u = u;
-	}
+		this.g = g;
+		}
 	public void start(final Stage primaryStage){
 		primaryStage.setTitle("Kalender - Hovedmeny - " + Login.me.getName());
 		BorderPane root = new BorderPane();
@@ -173,53 +166,24 @@ public class Hovedmeny extends Application{
 		grid.add(title2, 3, 1);
 
 		Button btn0 = new Button("-->");
-		Button btn1 = new Button("Varsel");
-		Button btn2 = new Button("Grupper");
-		Button btn3 = new Button("Opprett Event");
-		Button btn4 = new Button("Logg ut");
-		Button btn5 = new Button("Vis alle event");
-		Button btn6 = new Button("Vis kun skjulte");
-		Button btn7 = new Button("Vis normalt");
-		Button btn8 = new Button("<--");
-		Button btn9 = new Button("Til hovedmeny");
-		
-		grid.add(btn8, 0, 2);
-		if (Login.me == u){
-			grid.add(btn1, 1, 2);
-			grid.add(btn2, 2, 2);
-			grid.add(btn3, 3, 2);
-			grid.add(btn4, 4, 2);
-			grid.add(btn5, 5, 2);
-			grid.add(btn6, 6, 2);
-			grid.add(btn7, 7, 2);			
-		}
-		else {
-			grid.add(btn9, 3, 2);
-		}
 		grid.add(btn0, 8, 2);
+		Button btn3 = new Button("Opprett Event");
+		grid.add(btn3, 3 , 2);
+		Button btn4 = new Button("Logg ut");
+		grid.add(btn4, 4, 2);
+		Button btn8 = new Button("<--");
+		grid.add(btn8, 0, 2);
 
 		btn0.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent e){
-				Hovedmeny hm = new Hovedmeny(time.plusMonths(1),choice,u);
+				GroupCalendar hm = new GroupCalendar(time.plusMonths(1),g);
 				hm.start(primaryStage);
 			}
 		});
-		btn1.setOnAction(new EventHandler<ActionEvent>() {
-			public void handle(ActionEvent e){
-				RenderNotifications r = new RenderNotifications();
-				r.start(primaryStage);
-			}
-		});
-
-		btn2.setOnAction(new EventHandler<ActionEvent>() {
-			public void handle(ActionEvent e){
-				RenderGroups rg = new RenderGroups();
-				rg.start(primaryStage);
-			}
-		});
+		
 		btn3.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent e){
-				CreateEvent c = new CreateEvent(null);
+				CreateEvent c = new CreateEvent(g);
 				c.start(primaryStage);
 			}
 		});
@@ -230,39 +194,13 @@ public class Hovedmeny extends Application{
 				l.start(primaryStage);
 			}
 		});
-		btn5.setOnAction(new EventHandler<ActionEvent>() {
-			public void handle(ActionEvent e){
-				choice = ALL;
-				Hovedmeny hm = new Hovedmeny(time,choice,u);
-				hm.start(primaryStage);
-			}
-		});
-		btn6.setOnAction(new EventHandler<ActionEvent>() {
-			public void handle(ActionEvent e){
-				choice = HIDDEN;
-				Hovedmeny hm = new Hovedmeny(time,choice,u);
-				hm.start(primaryStage);
-			}
-		});
-		btn7.setOnAction(new EventHandler<ActionEvent>() {
-			public void handle(ActionEvent e){
-				choice = VISIBLE;
-				Hovedmeny hm = new Hovedmeny(time,choice,u);
-				hm.start(primaryStage);
-			}
-		});
 		btn8.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent e){
-				Hovedmeny hm = new Hovedmeny(time.minusMonths(1),choice,u);
+				GroupCalendar hm = new GroupCalendar(time.minusMonths(1),g);
 				hm.start(primaryStage);
 			}
 		});
-		btn9.setOnAction(new EventHandler<ActionEvent>() {
-			public void handle(ActionEvent e){
-				Hovedmeny hm = new Hovedmeny(LocalDate.now(),Hovedmeny.VISIBLE, Login.me);
-				hm.start(primaryStage);
-			}
-		});
+
 		root.setTop(grid);
 	}
 	
@@ -280,16 +218,7 @@ public class Hovedmeny extends Application{
 	}
 	
 	private void initEvents(final Stage primaryStage){
-		List<Event> events;
-		switch (choice){
-		case ALL : events = Login.me.getAllEvents(Login.conn);
-		break;
-		case VISIBLE: events = Login.me.getVisibleEvents(Login.conn);
-		break;
-		case HIDDEN: events = Login.me.getHiddenEvents(Login.conn);
-		break;
-		default: throw new IllegalStateException();
-		}
+		List<Event> events = g.getEvents(Login.conn);
 		for (Event event : events) {
 			addEvent(event, primaryStage);
 		}
