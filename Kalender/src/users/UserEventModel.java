@@ -61,10 +61,10 @@ public class UserEventModel {
 	public SimpleIntegerProperty visibilityProperty(){
 		return visibility;
 	}
-	public User getU() {
+	public User getUser() {
 		return u;
 	}
-	public Event getE() {
+	public Event getEvent() {
 		return e;
 	}
 	public int getStatus() {

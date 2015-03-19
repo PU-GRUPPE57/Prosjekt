@@ -213,9 +213,6 @@ public class Event {
 	public User getOwner() {
 		return owner;
 	}
-	public Room getRom() {
-		return rom;
-	}
 
 	public void changeTime(Connection conn, User u, Timestamp start, Timestamp slutt){
 		if (start.after(slutt))throw new IllegalArgumentException("starttid etter sluttid");
@@ -249,18 +246,6 @@ public class Event {
 		return end;
 	}
 
-	public static Timestamp convertTimestamp(String day, String month, String year){
-		DateFormat dateformat = new SimpleDateFormat("dd/MM/YYYY");
-		Date date;
-		try {
-			date = dateformat.parse(day + "/" + month + "/" + year);
-			long time = date.getTime();
-			return new Timestamp(time);
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
 	
 	public String getRoom(Connection conn){
 		String Sql = "SELECT ROM.NAVN FROM AVTALE,ROMRES, ROM WHERE AVTALE.AVTALEID=ROMRES.AVTALEID AND AVTALE.AVTALEID=" + id + " AND ROM.ROMID = ROMRES.ROMID";

@@ -41,7 +41,6 @@ public class User {
 	}
 
 	//Sjekker om innloggingsinformasjon er riktig:
-	//TODO TEST
 	public static User login(Connection conn, String username, String password){
 		String sql= "SELECT BRUKERNAVN,PASSORD FROM BRUKER WHERE BRUKERNAVN = '" + username + "'";
 		try {
@@ -191,20 +190,6 @@ public class User {
 		throw new IllegalStateException("failed to get user by users");
 
 	}
-	
-	//Test for restriksjoner i brukernavn, og navn //TODO passord
-	private boolean isValidUser(String firstname,String lastname, String username, String password){
-		if (!(firstname.matches("[a-ÂA-≈]+"))){
-			throw new IllegalArgumentException("Invalid firstname");
-		}
-		else if (!(lastname.matches("[a-ÂA-≈]+"))){
-			throw new IllegalArgumentException("Invalid lastname");
-		}
-		else if (!(username.matches("[a-ÂA-≈0-9]{6,20}"))){
-			throw new IllegalArgumentException("Invalid username");
-		}
-		return true;
-	}
 
 	private int generateID(Connection conn){
 		int res;
@@ -250,7 +235,6 @@ public class User {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		//TODO
 		throw new IllegalStateException("Noe gikk feil ved henting av inviterte brukere i event");
 	}
 	//Returnerer alle events tilknyttet denne user:
@@ -286,7 +270,6 @@ public class User {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		//TODO
 		throw new IllegalStateException("Noe gikk feil ved henting av inviterte brukere i event");
 	}
 	//returnerer en liste som inneholder alle varslene brukeren har:
@@ -304,7 +287,6 @@ public class User {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		//TODO
 		throw new IllegalStateException("Noe gikk feil ved henting av varsler for bruker " + username);
 	}
 	//setter synlighet i brukeriavtale til 0, gjemmer event:
@@ -346,7 +328,6 @@ public class User {
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			//TODO
 			throw new IllegalStateException("Noe gikk feil ved henting av brukere");
 		}
 		
@@ -363,9 +344,6 @@ public class User {
 	
 	public String getUsername() {
 		return username;
-	}
-	public boolean getAdmin() {
-		return admin == 1;
 	}
 	
 	public SimpleStringProperty usernameProperty(){

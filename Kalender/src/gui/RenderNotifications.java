@@ -85,7 +85,7 @@ public class RenderNotifications extends Application{
         
 		
        	grid.add(btn1, 0, 0);
-       	grid.add(btn4, 2, 0);
+       	grid.add(btn4, 3, 0);
        	
         ((Group) scene.getRoot()).getChildren().addAll(vbox);
         
@@ -130,11 +130,13 @@ public class RenderNotifications extends Application{
 			grid.getChildren().clear();
 			//EVENTVARSEL
 	       	if (selected.getType()==1){
+	       		if (!selected.toString().contains("slettet")){
 	       		grid.add(btn3, 2, 0);
+	       		}
 	       	}
 	       	//GRUPPEVARSEL
 	       	else if (selected.getType() == 2){
-	       		if (!selected.toString().contains("fjernet")){
+	       		if (!selected.toString().contains("slettet")){
 	       			grid.add(btn2, 2, 0);       		       			
 	       		}
 	       	}
@@ -143,6 +145,7 @@ public class RenderNotifications extends Application{
 	       		grid.add(btn3, 2, 0);
 	       	}
 	       	grid.add(btn1, 0, 0);
+	       	grid.add(btn4, 3, 0);
 		}
 	}
 	class MyStringTableCell extends TableCell<Group, String> {

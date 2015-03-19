@@ -85,11 +85,6 @@ public class Room {
 		throw new IllegalStateException("failed to retrieve room by name:" + name);
 	}
 
-	private List<Room> getRoomsWithCapacity(int cap){
-		//TODO
-		return new ArrayList<Room>();
-	}
-
 	public int getId() {
 		if (id == -1) throw new IllegalStateException("Room ID not set, use room.save() first");
 		return id;

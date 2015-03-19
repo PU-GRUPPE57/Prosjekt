@@ -58,22 +58,6 @@ public class Group {
 			e.printStackTrace();
 		}
 	}
-	public List<Event> getGroupEvents(Connection conn){
-		List<Event> l = new ArrayList<>();
-		String addEventSql = "SELECT * FROM GRUPPEIAVTALE WHERE GRUPPEID =" + id;
-		try {
-			Statement stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery(addEventSql);
-			while(rs.next()){
-				l.add(Event.getEvent(conn, rs.getInt("AvtaleID")));
-			}
-			
-			stmt.close();
-			return l;
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}return null;
-	}
 	
 	//fjerner bruker u:
 	public void removeUser(Connection conn, User u){
@@ -98,7 +82,7 @@ public class Group {
 				Varsel v = new Varsel(user, GroupMessages.GROUP_DELETED, this);
 				v.save(conn);
 			}
-			List<Event> l = getGroupEvents(conn);
+			List<Event> l = getEvents(conn);
 			for (Event event : l) {
 				event.deleteEvent(conn);
 			}
@@ -140,7 +124,6 @@ public class Group {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		//TODO
 		throw new IllegalStateException("Noe gikk feil ved henting av brukere");
 	}
 	//Henter gruppe med gitt id:

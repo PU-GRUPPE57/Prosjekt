@@ -46,7 +46,7 @@ public class RenderEvent extends Application{
 		primaryStage.setTitle("Kalender - Event - " + event.getName()  + " - " + Login.me.getName());
 
 		users.addAll(UserEventModel.getUserEventModels(Login.conn, event));
-		if (users.size()!=0) selected = users.get(0).getU();
+		if (users.size()!=0) selected = users.get(0).getUser();
 		Scene scene = new Scene(new javafx.scene.Group());
 		
 		Label label = new Label("Brukere status");
@@ -237,7 +237,7 @@ public class RenderEvent extends Application{
 		@Override
 		public void handle(MouseEvent click) {
 			TableCell t  = (TableCell) click.getSource();
-			selected =  users.get(t.getIndex()).getU();
+			selected =  users.get(t.getIndex()).getUser();
 
 
 		}
